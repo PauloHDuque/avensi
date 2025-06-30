@@ -1,0 +1,245 @@
+:root {
+  --first-color: #1f2b3f;
+  --second-color: #c3a25d;
+  --third-color: #d8d5cf;
+  --fourth-color: #f9f7f4;
+  --white: #ffffff;
+  --text-font: Roboto;
+  --title-font: Playfair Display;
+}
+
+*{
+    font-family: var(--text-font);
+}
+
+body {
+  background-color: var(--fourth-color);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.container {
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+  width: 90% !important;
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 95% !important;
+  }
+}
+
+.img-responsive {
+  display: block;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--first-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--third-color);
+}
+
+/* HEADER */
+
+header{
+    padding: 20px;
+    background-color: var(--third-color);
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.281);
+    border-bottom: 3px solid var(--first-color);
+    width: 100%;
+}
+
+header img{
+    height: 80px;
+}
+
+/* SECTION ONE */
+
+#section-one {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 0;
+}
+
+#section-one .title{
+    border-left: 4px solid var(--first-color);
+    padding-left: 15px;
+    margin-bottom: 20px;
+}
+
+#section-one .title span{
+    color: var(--second-color);
+    font-weight: bold;
+}
+
+#section-one .content-sec-one{
+    height: 100%;
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#section-one .left-content{
+    background-color: var(--third-color);
+    border-right: 4px solid var(--second-color);
+    padding: 25px;
+    height: 100%;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+}
+
+#section-one .left-content img{
+    height: 80px;
+}
+
+#section-one .right-content form{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background-color: var(--first-color);
+    color: var(--white);
+    padding: 25px;
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+}
+
+#section-one .right-content label{
+    margin-top: 10px;
+}
+
+#section-one .right-content input{
+    margin-top: 10px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+#section-one .right-content span{
+    color: red;
+}
+
+#section-one .right-content select{
+    margin-top: 10px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+#section-one .right-content textarea{
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#section-one .right-content button{
+    margin-top: 10px;
+    background-color: var(--second-color);
+    color: var(--white);
+    padding: 15px;
+    font-weight: 550;
+    border-radius: 5px;
+}
+
+#section-one .right-content #mensagem-envio{
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+#mensagem-envio {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  font-weight: bold;
+}
+#mensagem-envio.visivel {
+  opacity: 1;
+}
+
+
+/* FOOTER */
+
+footer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px;
+    background-color: var(--first-color);
+    border-top: 3px solid var(--second-color);
+    color: var(--white);
+    width: 100%;
+}
+
+footer img{
+    height: 80px;
+}
+
+footer .line{
+    width: 80%;
+    height: 2px;
+    background-color: var(--second-color);
+    margin-top: 25px;
+}
+
+footer .dev{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+footer .dev a{
+    color: var(--white);
+    text-decoration: none;
+}
+
+footer .dev i{
+    margin: 0 15px;
+}
+
+@media (max-width: 991px){
+  #section-one .left-content {
+    border-right: none;
+    border-bottom: 4px solid var(--second-color);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 0px;
+}
+
+#section-one .right-content form {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+}
+
+@media (max-width: 575px){
+    #section-one .right-content form{
+      width: 89vw;
+    }
+
+    #section-one .left-content{
+      width: 89vw;
+    }
+}

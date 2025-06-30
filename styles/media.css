@@ -1,0 +1,160 @@
+@media (max-width: 1386px) {
+  #section-one .left-content h2 {
+    font-size: 30px;
+  }
+
+  /* SECTION FOUR */
+
+  #section-four .swiper-slide .text {
+    height: 220px;
+  }
+}
+
+@media (max-width: 992px) {
+  /* SECTION ONE */
+
+  #section-one {
+    padding: 100px 0;
+  }
+
+  #section-one .content-sec-one {
+    flex-direction: column;
+  }
+
+  #section-one .content-sec-one {
+    margin-top: 60px;
+  }
+
+  #section-one .right-content {
+    margin-top: 55px;
+  }
+
+  #section-one .right-content img {
+    border-radius: 10px;
+    height: 400px;
+  }
+
+  #section-one .btn-contact-us {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* SECTION TWO */
+
+  #section-two .content-counter {
+    width: 100%;
+    padding: 25px;
+  }
+
+  #section-two .content-counter .left-content span {
+    font-size: 30px;
+  }
+
+  #section-two .content-card .card {
+    width: 100%;
+    padding: 25px;
+  }
+
+  /* SECTION THREE */
+
+  #section-three .content-sec-three {
+    margin-top: 40px;
+    flex-direction: column-reverse;
+  }
+
+  #section-three .left-content {
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* SECTION FOUR*/
+
+  #section-four {
+    padding: 40px 0;
+  }
+
+  /* SECTION FIVE */
+
+  #section-five {
+    padding: 40px 0;
+  }
+
+  #section-five .card {
+    width: 100%;
+  }
+
+  #section-five .card .target {
+    height: 100%;
+    padding: 15px 0;
+  }
+
+  #section-five .card .service {
+    height: 100%;
+    padding: 15px 0;
+  }
+
+  #section-five .card .benefit {
+    height: 100%;
+    padding: 15px 0;
+  }
+
+  /* SECTION SIX */
+
+  #section-six {
+    padding: 40px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  #section-two .content-counter .right-content {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 577px) {
+  /* SECTION ONE */
+
+  #section-one .left-content {
+    text-align: center;
+  }
+
+  #section-one .left-content h2 {
+    font-size: 20px;
+  }
+
+  /* SECTION TWO */
+
+  #section-two .left-content img {
+    border-radius: 10px;
+    height: 330px;
+  }
+
+  /* SECTION THREE */
+
+  #section-three {
+    padding: 50px 0;
+    background-color: var(--first-color);
+  }
+
+  .custom-shape-divider-top-1748461649 svg {
+    height: 30px;
+  }
+
+  #section-five form {
+    width: 89vw;
+  }
+}
+
+@media (max-width: 470px) {
+  #section-five .left-content .price {
+    padding: 20px 15px;
+  }
+}
+
+@media (max-width: 440px) {
+  #section-one .right-content img {
+    border-radius: 10px;
+    height: 330px;
+  }
+}

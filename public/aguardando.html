@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Aguardando Confirmação do Pagamento</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .spinner {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #555;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Estamos aguardando a confirmação do seu pagamento via PIX...</h2>
+  <p>Isso pode levar alguns minutos. Assim que for confirmado, você será redirecionado automaticamente.</p>
+
+  <div class="spinner"></div>
+
+  <script>
+    const cpf = localStorage.getItem("cpf");
+
+    if (!cpf) {
+      document.body.innerHTML = "<h3>Erro: CPF não encontrado.</h3>";
+    } else {
+      const verificar = async () => {
+        const res = await fetch(`/verifica-status?ref=${cpf}`);
+        const json = await res.json();
+        if (json.aprovado) {
+          window.location.href = "/pagamento-concluido.html";
+        }
+      };
+
+      setInterval(verificar, 10000);
+    }
+  </script>
+
+</body>
+
+</html>

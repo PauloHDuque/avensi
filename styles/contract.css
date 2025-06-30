@@ -1,0 +1,63 @@
+/* SECTION ONE */
+
+#section-one {
+  padding: 160px 0;
+}
+
+#section-one label {
+  display: block;
+  margin-top: 12px;
+}
+
+#section-one input,
+textarea,
+select,
+button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#section-one button {
+  background-color: var(--first-color);
+  color: white;
+  margin-top: 16px;
+  cursor: pointer;
+  transition: 0.4s ease;
+  border-radius: 10px;
+  font-weight: bold;
+  border: none;
+}
+
+#section-one button:hover {
+  background-color: var(--second-color);
+  color: var(--first-color);
+}
+
+#section-one button i{
+  margin-left: 10px;
+}
+
+#pdf-render {
+  border: 1px solid #ccc;
+  margin-top: 20px;
+  padding: 10px;
+  text-align: center;
+  overflow: auto;
+  max-height: 600px;
+}
+
+@media (max-width: 768px) {
+  #pdf-render {
+    padding: 8px;
+    max-height: 400px;
+  }
+
+  #pdf-render canvas {
+    max-width: 100%;
+    border: none;
+    box-shadow: none;
+  }
+}

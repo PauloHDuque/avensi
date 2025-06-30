@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <!-- MANTER ENTRE 130 A 150 CARACTERES -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="/styles/contract.css">
+    <link rel="stylesheet" href="/styles/settings.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <script src="/js/header.js" defer></script>
+    <script src="/js/menu.js" defer></script>
+    <script src="/js/hash.js" defer></script>
+    <script src="/js/counter.js" defer></script>
+    <script src="/js/swiper.js" defer></script>
+    <script src="/js/accordion.js" defer></script>
+    <title>Controle Financeiro 360</title>
+</head>
+
+<body>
+    <header>
+        <a id="logo" title="Logo" href="https://www.controlefinanceiro360.com.br"><img class="img-responsive" loading="lazy" title="Logo"
+                src="/images/logo-header.webp" alt="Logo" /></a>
+        <nav id="nav">
+            <button aria-label="Abrir Menu" id="btn-mobile" aria-haspopup="true" aria-controls="menu"
+                aria-expanded="false">
+                <span id="hamburger"></span>
+            </button>
+            <ul id="menu">
+                <li>
+                    <a class="header-line" title="Clique aqui para ser direcionado a sessão INÍCIO"
+                        href="https://www.controlefinanceiro360.com.br">INÍCIO</a>
+                </li>
+                <li>
+                    <a class="header-line" title="Clique aqui para ser direcionado a sessão SERVIÇOS"
+                        href="https://www.controlefinanceiro360.com.br">SERVIÇOS</a>
+                </li>
+                <li>
+                    <a class="header-line" title="Clique aqui para ser direcionado a sessão SOBRE NÓS"
+                        href="https://www.controlefinanceiro360.com.br">SOBRE NÓS</a>
+                </li>
+                <li>
+                    <a class="header-line" title="Clique aqui para ser direcionado a sessão FEEDBACKS"
+                        href="https://www.controlefinanceiro360.com.br">FEEDBACKS</a>
+                </li>
+                <li>
+                    <a class="header-line" title="Clique aqui para ser direcionado a sessão CONTATO"
+                        href="#footer">CONTATO</a>
+                </li>
+                <li>
+                    <a class="buy" title="Clique aqui para ser direcionado a sessão PLANOS E SERVIÇOS"
+                        href="https://www.controlefinanceiro360.com.br">PLANOS E SERVIÇOS</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="section-one">
+            <div class="container">
+                <div class="content-sec-one">
+                    <h2>Leia o contrato e preencha seus dados</h2>
+                    <p><strong>Após preencher os dados, faça o download do contrato e assine digitalmente.</strong></p>
+                    <h3>Visualize o contrato base:</h3>
+                    <div id="pdf-render">Carregando contrato...</div>
+
+                    <hr />
+
+                    <form id="form-contrato">
+                        <label for="nome">Nome completo:</label>
+                        <input type="text" id="nome" name="nome" required />
+
+                        <label for="cpf">CPF:</label>
+                        <input type="text" id="cpf" name="cpf" required />
+
+                        <label for="rg">RG:</label>
+                        <input type="text" id="rg" name="rg" required />
+
+                        <label for="formaPagamento">Informe a forma de pagamento:</label>
+                        <select name="formaPagamento" id="formaPagamento" required>
+                            <option disabled selected>Selecione a forma de pagamento:</option>
+                            <option value="Pix">Pix</option>
+                            <option value="Cartão de Crédito">Cartão de Crédito</option>
+                            <option value="Boleto">Boleto</option>
+                        </select>
+
+                        <label for="endereco">Endereço completo:</label>
+                        <input type="text" id="endereco" name="endereco" required></input>
+
+                        <button type="button" id="btnGerarPDF">GERAR CONTRATO PREENCHIDO EM PDF <i
+                                class="fa-solid fa-file-arrow-down"></i></button>
+                    </form>
+
+
+                    <button id="btnPagamento" style="display: none;">PAGAR COM MERCADO PAGO <i class="fa-solid fa-lock"></i></button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer id="footer">
+        <div class="container">
+            <div class="content-footer">
+                <div class="col-lg-1 col-md-12 col-sm-12 col-xs-12">
+                    <div class="logo-footer">
+                        <a href="#section-one" title="Clique aqui para voltar ao início"><img class="img-responsive"
+                                loading="lazy" src="/images/logo-footer.webp" alt="Logo"
+                                title="Clique aqui para voltar ao início" /></a>
+                    </div>
+                </div>
+                <div class="col-lg-1 col-md-12 col-sm-12 col-xs-12"></div>
+                <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12 list-1">
+                    <h3>INSTITUCIONAL</h3>
+                    <ul>
+                        <li>
+                            <a title="Clique aqui para ser direcionado a página INICIAL" href="https://www.controlefinanceiro360.com.br"><i
+                                    class="fa-solid fa-chevron-right"></i>INÍCIO</a>
+                        </li>
+                        <li>
+                            <a title="Clique aqui para ser direcionado a página INICIAL" href="https://www.controlefinanceiro360.com.br"><i
+                                    class="fa-solid fa-chevron-right"></i>SERVIÇOS</a>
+                        </li>
+                        <li>
+                            <a title="Clique aqui para ser direcionado a página INICIAL" href="https://www.controlefinanceiro360.com.br"><i
+                                    class="fa-solid fa-chevron-right"></i>SOBRE NÓS</a>
+                        </li>
+                        <li>
+                            <a title="Clique aqui para ser direcionado a página INICIAL" href="https://www.controlefinanceiro360.com.br"><i
+                                    class="fa-solid fa-chevron-right"></i>FEEDBACKS</a>
+                        </li>
+                        <li>
+                            <a title="Clique aqui para ser direcionado a página INICIAL" href="https://www.controlefinanceiro360.com.br"><i
+                                    class="fa-solid fa-chevron-right"></i>CONTATO</a>
+                        </li>
+                        <li>
+                            <a title="Clique aqui para ser direcionado a página INICIAL" href="https://www.controlefinanceiro360.com.br"><i
+                                    class="fa-solid fa-chevron-right"></i>PLANOS E SERVIÇOS</a>
+                        </li>
+                        <li>
+                            <a title="Clique aqui para ser direcionado a página POLÍTICA DE PRIVACIDADE"
+                                href="/public/politica-privacidade.html"><i
+                                    class="fa-solid fa-chevron-right"></i>POLÍTICA DE PRIVACIDADE</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12 list-1">
+                    <h3>CONTATO</h3>
+                    <ul>
+                        <li>
+                            <a title="Clique aqui para enviar um e-mail"
+                                href="mailto:suporte@controlefinanceiro360.com.br"><i
+                                    class="fa-solid fa-envelope"></i>suporte@controlefinanceiro360.com.br</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12 list-1">
+                    <h3>SOCIAL</h3>
+                    <ul>
+                        <li>
+                            <a title="Clique aqui para acessar o Instagram" href=""><i
+                                    class="fa-brands fa-instagram"></i>@</a>
+                        </li>
+                    </ul>
+                </div> -->
+            </div>
+            <div class="line"></div>
+            <div class="dev">
+                <p>CNPJ: 60.849.761/0001-44</p>
+                <p>Razão Social: AVENSI</p>
+                <p><i class="fa-solid fa-location-dot"></i>Rua Sérgio Antunes de Andrade, 363 - Sala 2, São Paulo - SP
+                </p>
+                <a target="_blank" title="Clique aqui para acessar o instagram da FuniUx Company"
+                    href="https://www.instagram.com/funiuxcompany/">| <i class="fa-brands fa-instagram"></i>Desenvolvido
+                    por FuniUx Company</a>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const plano = urlParams.get('plano');
+
+        document.querySelector('#plano-escolhido').textContent = plano.toUpperCase();
+        document.querySelector('#inputPlano').value = plano;
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        const url = "/contrato-base.pdf";
+
+        const pdfjsLib = window['pdfjs-dist/build/pdf'];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        const renderPDF = async () => {
+            const loadingTask = pdfjsLib.getDocument(url);
+            const pdf = await loadingTask.promise;
+            const container = document.getElementById('pdf-render');
+            container.innerHTML = '';
+
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                const page = await pdf.getPage(pageNum);
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                const viewport = page.getViewport({ scale: 1 });
+
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                await page.render({ canvasContext: context, viewport }).promise;
+                container.appendChild(canvas);
+            }
+        };
+
+
+        if (window.opener || window.location !== window.parent.location) {
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "Contrato-Controle-Financeiro-360.pdf";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        renderPDF();
+    </script>
+
+    <!-- Scripts para gerar PDF e fazer upload -->
+    <script>
+        const planospdf = {
+            start360: { titulo: "Start 360", valor: 9.99 }, //aqui é valor em real inteiro
+            essencial360: { titulo: "Essencial 360", valor: 49.99 },
+            prime360: { titulo: "Prime 360", valor: 199.99 }
+        };
+
+        document.getElementById('btnGerarPDF').addEventListener('click', async () => {
+            const form = document.getElementById('form-contrato');
+            const formData = Object.fromEntries(new FormData(form));
+
+            const planoSelecionadoo = new URLSearchParams(window.location.search).get('plano');
+            const itens = planospdf[planoSelecionadoo];
+
+            if (!itens) {
+                alert("Plano não identificado.");
+                return;
+            }
+
+            // Adiciona os campos do plano ao formData
+            formData.valorPago = itens.valor;
+            formData.planoEscolhido = itens.titulo;
+
+            const res = await fetch('/gerar-pdf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            if (res.ok) {
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+
+                // Cria link invisível e dispara o download
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'contrato.pdf';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+
+                // Exibe botão de pagamento
+                document.getElementById('btnPagamento').style.display = 'block';
+            } else {
+                alert('Erro ao gerar contrato.');
+            }
+        });
+    </script>
+
+
+    <script>
+        const planos = {
+            start360: { titulo: "Start 360 - Controle Financeiro 360", valor: 999 }, //aqui é valor em real com centavos ex: 100 = 1,00
+            essencial360: { titulo: "Essencial 360 - Controle Financeiro 360", valor: 4999 },
+            prime360: { titulo: "Prime 360 - Controle Financeiro 360", valor: 19999 }
+        };
+
+        document.getElementById('btnPagamento').addEventListener('click', async () => {
+            const planoSelecionado = new URLSearchParams(window.location.search).get('plano');
+
+            if (!planoSelecionado || !planos[planoSelecionado]) {
+                alert("Plano inválido ou não especificado.");
+                return;
+            }
+
+            const item = planos[planoSelecionado];
+            const cpfLimpo = document.getElementById('cpf').value.replace(/\D/g, '');
+
+            try {
+                // Primeiro: gerar PDF com os dados do plano
+                await fetch("/gerar-pdf", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        valorPago: item.valor,
+                        planoEscolhido: item.titulo
+                    })
+                });
+
+                // Depois: criar preferência no Mercado Pago
+                const response = await fetch("/criar-preferencia", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        titulo: item.titulo,
+                        preco: item.valor,
+                        cpf: cpfLimpo
+                    })
+                });
+
+                localStorage.setItem("cpf", cpfLimpo);
+                const data = await response.json();
+
+                if (data.init_point) {
+                    window.location.href = data.init_point;
+                } else {
+                    alert("Erro ao redirecionar para o pagamento.");
+                }
+
+            } catch (error) {
+                alert("Erro ao iniciar o pagamento.");
+                console.error(error);
+            }
+        });
+    </script>
+    <script>
+
+        const aplicarMascaraCPF = v =>
+            v.replace(/\D/g, '')
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+
+        const aplicarMascaraRG = v =>
+            v.replace(/\D/g, '')
+                .replace(/(\d{2})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d)/, '$1.$2')
+                .replace(/(\d{3})(\d)$/, '$1-$2');
+
+
+        const validarCPF = v => v.replace(/\D/g, '').length === 11;
+        const validarRG = v => v.replace(/\D/g, '').length === 9;
+
+        function exibirErro(input, msg) {
+            input.dataset.erro = '1';
+            input.style.border = '2px solid red';
+            let box = input.nextElementSibling;
+            if (!box || !box.classList.contains('erro-msg')) {
+                box = document.createElement('div');
+                box.className = 'erro-msg';
+                box.style.color = 'red';
+                box.style.marginTop = '4px';
+                input.parentNode.insertBefore(box, input.nextSibling);
+            }
+            box.textContent = msg;
+        }
+        function limparErro(input) {
+            delete input.dataset.erro;
+            input.style.border = '';
+            if (input.nextElementSibling && input.nextElementSibling.classList.contains('erro-msg')) {
+                input.nextElementSibling.remove();
+            }
+        }
+
+        const form = document.getElementById('form-contrato');
+        const nome = document.getElementById('nome');
+        const cpf = document.getElementById('cpf');
+        const rg = document.getElementById('rg');
+        const end = document.getElementById('endereco');
+        const pagamento = document.getElementById('formaPagamento');
+        const botao = document.getElementById('btnGerarPDF');
+
+        function checarFormulario() {
+            const tudoValido =
+                nome.value.trim() !== '' &&
+                end.value.trim() !== '' &&
+                pagamento.value !== '' &&             
+                validarCPF(cpf.value) &&
+                validarRG(rg.value) &&
+                !form.querySelector('[data-erro]');  
+
+            botao.disabled = !tudoValido;
+        }
+
+        cpf.addEventListener('input', () => {
+            cpf.value = aplicarMascaraCPF(cpf.value);
+            validarCPF(cpf.value) ? limparErro(cpf) : exibirErro(cpf, 'CPF inválido');
+            checarFormulario();
+        });
+
+        rg.addEventListener('input', () => {
+            rg.value = aplicarMascaraRG(rg.value);
+            validarRG(rg.value) ? limparErro(rg) : exibirErro(rg, 'RG inválido');
+            checarFormulario();
+        });
+
+        [nome, end].forEach(el =>
+            el.addEventListener('input', checarFormulario)
+        );
+
+        pagamento.addEventListener('change', checarFormulario);
+
+        botao.addEventListener('click', () => {
+            if (!botao.disabled) {
+                console.log('Gerando PDF com dados válidos…');
+            }
+        });
+
+        checarFormulario();
+    </script>
+
+
+
+</body>
+
+</html>

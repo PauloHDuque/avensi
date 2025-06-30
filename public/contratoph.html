@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contrato - Preenchimento</title>
+  <link rel="stylesheet" href="/styles/contratoph.css">
+  <style>
+    .container {
+      max-width: 768px;
+      margin: auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+    }
+
+    input,
+    textarea,
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #333;
+      color: white;
+      margin-top: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+
+    #pdf-render {
+      border: 1px solid #ccc;
+      margin-top: 20px;
+      padding: 10px;
+      text-align: center;
+      overflow: auto;
+      max-height: 600px;
+    }
+
+    @media (max-width: 768px) {
+      #pdf-render {
+        padding: 8px;
+        max-height: 400px;
+      }
+
+      #pdf-render canvas {
+        max-width: 100%;
+        border: none;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Leia o contrato e preencha seus dados</h1>
+
+    <h3>Visualize o contrato base:</h3>
+    <div id="pdf-render">Carregando contrato...</div>
+
+    <hr />
+
+    <form id="form-contrato">
+      <label for="nome">Nome completo:</label>
+      <input type="text" id="nome" name="nome" required />
+
+      <label for="nacionalidade">Nacionalidade:</label>
+      <input type="text" id="nacionalidade" name="nacionalidade" required />
+
+      <label for="estadoCivil">Estado civil:</label>
+      <input type="text" id="estadoCivil" name="estadoCivil" required />
+
+      <label for="profissao">Profissão:</label>
+      <input type="text" id="profissao" name="profissao" required />
+
+      <label for="cpf">CPF:</label>
+      <input type="text" id="cpf" name="cpf" required />
+
+      <label for="rg">RG:</label>
+      <input type="text" id="rg" name="rg" required />
+
+      <label for="endereco">Endereço completo:</label>
+      <textarea id="endereco" name="endereco" rows="3" required></textarea>
+
+      <button type="button" id="btnGerarPDF">Gerar contrato preenchido em PDF</button>
+    </form>
+
+    <div id="areaUpload" style="display:none;">
+      <h2>Envie o contrato assinado</h2>
+      <form id="form-upload" enctype="multipart/form-data" method="POST">
+        <label for="email">Seu e-mail (deve ser o mesmo usado na compra):</label>
+        <input type="email" name="email" required />
+
+        <label for="contratoAssinado">Upload do contrato assinado (PDF ou imagem):</label>
+        <input type="file" name="contratoAssinado" accept=".pdf,.jpg,.jpeg,.png" required />
+
+        <button type="submit">Enviar contrato</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    const url = "/contrato-base.pdf";
+
+    const pdfjsLib = window['pdfjs-dist/build/pdf'];
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const renderPDF = async () => {
+      const loadingTask = pdfjsLib.getDocument(url);
+      const pdf = await loadingTask.promise;
+      const container = document.getElementById('pdf-render');
+      container.innerHTML = '';
+
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+        const page = await pdf.getPage(pageNum);
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        const viewport = page.getViewport({ scale: 1 });
+
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        await page.render({ canvasContext: context, viewport }).promise;
+        container.appendChild(canvas);
+      }
+    };
+
+    renderPDF();
+  </script>
+
+  <!-- Scripts para gerar PDF e fazer upload -->
+  <script>
+    document.getElementById('btnGerarPDF').addEventListener('click', async () => {
+      const form = document.getElementById('form-contrato');
+      const formData = Object.fromEntries(new FormData(form));
+
+      const res = await fetch('/gerar-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        document.getElementById('areaUpload').style.display = 'block';
+      } else {
+        alert('Erro ao gerar contrato.');
+      }
+    });
+
+    document.getElementById('form-upload').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+
+      const res = await fetch('/upload-contrato', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (res.ok) {
+        alert('Contrato enviado com sucesso!');
+        window.location.href = '/escolher-plano';
+      } else {
+        alert('Erro ao enviar contrato.');
+      }
+    });
+  </script>
+</body>
+
+</html>
