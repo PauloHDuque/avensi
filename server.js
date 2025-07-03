@@ -111,11 +111,11 @@ app.get('/pagamento-concluido', async (req, res) => {
       });
 
       console.log(`Pagamento confirmado e email enviado para ${emailComprador}`);
+      res.sendFile(path.join(__dirname, 'public', 'pagamento-concluido.html'));
     } else {
-      console.log('Pagamento ainda não aprovado ou inválido.');
+      return res.redirect('/aguardando.html');
     }
 
-    res.sendFile(path.join(__dirname, 'public', 'pagamento-concluido.html'));
 
   } catch (err) {
     console.error('Erro ao verificar pagamento:', err);
@@ -170,45 +170,6 @@ app.get('/verifica-pagamento', (req, res) => {
   } else {
     // Redireciona para uma página avisando que o pagamento ainda não foi aprovado
     return res.redirect('/aguardando.html');
-  }
-});
-
-app.get("/verifica-status", (req, res) => {
-  const { ref } = req.query;
-
-  if (pagamentosAprovados.has(ref)) {
-    return res.json({ aprovado: true });
-  }
-
-  return res.json({ aprovado: false });
-});
-
-
-
-app.get("/api/status-pagamento/:payment_id", async (req, res) => {
-  const { payment_id } = req.params; // Corrigido aqui
-
-  // Desativa cache
-  res.set("Cache-Control", "no-store");
-  res.set("Pragma", "no-cache");
-  res.set("Expires", "0");
-
-  try {
-    const response = await fetch(
-      `https://api.mercadopago.com/v1/payments/${payment_id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
-        },
-      }
-    );
-
-    const payment = await response.json();
-
-    res.json({ status: payment.status });
-  } catch (error) {
-    console.error("Erro ao verificar pagamento:", error);
-    res.status(500).json({ error: "Erro ao consultar pagamento" });
   }
 });
 
