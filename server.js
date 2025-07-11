@@ -95,7 +95,11 @@ app.get("/pagamento-concluido", async (req, res) => {
 
       // Gera o PDF novamente (melhor que depender do disco)
       const htmlContent = gerarHtmlContrato(dados); // você pode mover o código HTML para uma função separada
-      const browser = await puppeteer.launch({ headless: "new" });
+      const browser = await puppeteer.launch({
+        headless: "new",
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      });
+
       const page = await browser.newPage();
       await page.setContent(htmlContent, { waitUntil: "networkidle0" });
       const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
