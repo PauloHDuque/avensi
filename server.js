@@ -10,11 +10,6 @@ const fs = require("fs");
 const multer = require("multer");
 require("dotenv").config();
 
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-const dadosUsuarios = new Map(); // chave: cpf, valor: { nome, email, rg, endereco, planoEscolhido, valorPago, formaPagamento }
-
 function gerarHtmlContrato(dados) {
   const {
     nome,
@@ -109,6 +104,11 @@ function gerarHtmlContrato(dados) {
   `;
 }
 
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+const dadosUsuarios = new Map(); // chave: cpf, valor: { nome, email, rg, endereco, planoEscolhido, valorPago, formaPagamento }
+
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -188,7 +188,7 @@ app.get("/pagamento-concluido", async (req, res) => {
       }
 
       // Gera o PDF novamente (melhor que depender do disco)
-      const htmlContent = gerarHtmlContrato(dados); // você pode mover o código HTML para uma função separada
+      const htmlContent = gerarHtmlContrato(dados);
       const browser = await puppeteer.launch({
         headless: "new",
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
