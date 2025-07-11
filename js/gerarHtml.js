@@ -1,4 +1,4 @@
-export default function gerarHtmlContrato(dados) {
+function gerarHtmlContrato(dados) {
   const {
     nome,
     cpf,
@@ -10,7 +10,10 @@ export default function gerarHtmlContrato(dados) {
     cidade,
   } = dados;
 
-  const valorPagoContrato = valorPago / 100;
+  const valorPagoContrato = (valorPago / 100).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 
   let vigencia = "";
   switch (planoEscolhido) {
@@ -66,7 +69,7 @@ export default function gerarHtmlContrato(dados) {
       <p>3.1 Fornecer, de forma completa e fidedigna, todas as informações solicitadas pelo CONTRATADO, necessárias para a elaboração do relatório.</p>
       <p>3.2 Reconhecer que a não entrega, entrega incompleta ou envio com erros de informações solicitadas poderá impactar no prazo, qualidade ou mesmo inviabilizar a entrega do relatório final.</p>
       <h3>CLÁUSULA 4 – DA REMUNERAÇÃO</h3>
-      <p>4.1 Pelos serviços contratados, o CONTRATANTE pagou ao CONTRATADO o valor de R$ ${valorPagoContrato}, via ${formaPagamento}, no ato da contratação.</p>
+      <p>4.1 Pelos serviços contratados, o CONTRATANTE pagou ao CONTRATADO o valor de ${valorPagoContrato}, via ${formaPagamento}, no ato da contratação.</p>
       <p>4.2 O pagamento não será reembolsável, salvo em caso de não prestação do serviço por parte do CONTRATADO, desde que o CONTRATANTE tenha cumprido todas as suas obrigações.</p>
       <h3>CLÁUSULA 5 – PRAZO DE ENTREGA</h3>
       <p>5.1 O prazo para entrega do relatório será de até 10 dias, contados <strong>a partir da data de recebimento completo</strong> das informações solicitadas ao CONTRATANTE.</p>
@@ -91,3 +94,5 @@ export default function gerarHtmlContrato(dados) {
     </html>
   `;
 }
+
+module.exports = gerarHtmlContrato;
