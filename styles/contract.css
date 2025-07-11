@@ -48,6 +48,22 @@ button {
   overflow: auto;
   max-height: 600px;
 }
+.checkbox-container {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 10px;
+    font-family: sans-serif;
+    max-width: 700px; /* opcional, limita o comprimento */
+  }
+
+  .checkbox-container input[type="checkbox"] {
+    justify-self: start;
+  }
+
+  .checkbox-container label {
+    white-space: normal;
+  }
 
 @media (max-width: 768px) {
   #pdf-render {

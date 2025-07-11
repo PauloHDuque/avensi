@@ -232,22 +232,31 @@ app.post("/gerar-pdf", async (req, res) => {
     valorPago,
     formaPagamento,
     email,
+    cidade,
   } = req.body;
   console.log("Dados recebidos:", req.body);
+  const valorPagoContrato = valorPago / 100;
+  let vigencia = "";
 
   switch (planoEscolhido) {
-    case "planoBasico":
-      valorPago = 19.99;
+    case "Start 360":
+      vigencia = "30 dias";
       break;
-    case "planoIntermediario":
-      valorPago = 149.97;
+    case "Essencial 360":
+      vigencia = "3 meses";
       break;
-    case "planoAvancado":
-      valorPago = 2399.88;
+    case "Prime 360":
+      vigencia = "12 meses";
       break;
     default:
       return res.status(400).send("Plano inválido.");
   }
+  const dataHoje = new Date().toLocaleDateString("pt-BR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  console.log(dataHoje);
   console.log(req.body);
   const htmlContent = `
     <!DOCTYPE html>
@@ -282,7 +291,7 @@ app.post("/gerar-pdf", async (req, res) => {
       <p>3.1 Fornecer, de forma completa e fidedigna, todas as informações solicitadas pelo CONTRATADO, necessárias para a elaboração do relatório.</p>
       <p>3.2 Reconhecer que a não entrega, entrega incompleta ou envio com erros de informações solicitadas poderá impactar no prazo, qualidade ou mesmo inviabilizar a entrega do relatório final.</p>
       <h3>CLÁUSULA 4 – DA REMUNERAÇÃO</h3>
-      <p>4.1 Pelos serviços contratados, o CONTRATANTE pagou ao CONTRATADO o valor de R$ ${valorPago}, via ${formaPagamento}, no ato da contratação.</p>
+      <p>4.1 Pelos serviços contratados, o CONTRATANTE pagou ao CONTRATADO o valor de R$ ${valorPagoContrato}, via ${formaPagamento}, no ato da contratação.</p>
       <p>4.2 O pagamento não será reembolsável, salvo em caso de não prestação do serviço por parte do CONTRATADO, desde que o CONTRATANTE tenha cumprido todas as suas obrigações.</p>
       <h3>CLÁUSULA 5 – PRAZO DE ENTREGA</h3>
       <p>5.1 O prazo para entrega do relatório será de até 10 dias, contados <strong>a partir da data de recebimento completo</strong> das informações solicitadas ao CONTRATANTE.</p>
@@ -291,14 +300,14 @@ app.post("/gerar-pdf", async (req, res) => {
       <p>6.2 O serviço prestado tem caráter consultivo e informativo, não se caracterizando como garantia de resultados futuros.</p>
       <h3>CLÁUSULA 7 – DA RESCISÃO E VIGÊNCIA</h3>
       <p>7.1 Este contrato poderá ser rescindido dentro prazo de 7 dias corridos após a confirmação de pagamento, mediante notificação por escrito no e-mail suporte@controlefinanceiro360.com.br </p>
-      <p>7.2 O presente contrato terá vigência do plano escolhido após a confirmação de pagamento.</p>
+      <p>7.2 O presente contrato terá vigência de ${vigencia} após a confirmação de pagamento."</p>
       <h3>CLÁUSULA 8 – DO FORO</h3>
       <p>8.1 Para dirimir quaisquer controvérsias oriundas deste contrato, as partes elegem o foro da Comarca de São Paulo - SP com renúncia a qualquer outro, por mais privilegiado que seja.</p>
       <p>E por estarem assim justos e contratados, firmam o presente instrumento em meio digital.</p>
-      <p>Local:</p>
-      <p>Data:</p>
+      <p>Local: ${cidade}</p>
+      <p>Data: ${dataHoje}</p>
       <h3>CONTRATANTE:</h3>
-      <p>Assinatura: </p>
+      <p>Eu ${nome}, confirmo que li, compreendi e aceito os termos estabelecidos neste contrato. </p>
       <p>Nome completo:</p>
       <h3>CONTRATADO:</h3>
       <p>Assinatura: AVENSI</p>
