@@ -13,6 +13,8 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const dadosUsuarios = new Map(); // chave: cpf, valor: { nome, email, rg, endereco, planoEscolhido, valorPago, formaPagamento }
+
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -31,7 +33,7 @@ const client = new MercadoPagoConfig({
 });
 
 app.post("/criar-preferencia", async (req, res) => {
-const { titulo, preco, cpf } = req.body;
+  const { titulo, preco, cpf } = req.body;
 
   const preferenceData = {
     items: [
@@ -63,63 +65,95 @@ const { titulo, preco, cpf } = req.body;
   }
 });
 
-
 // Endpoint chamado após pagamento aprovado
-app.get('/pagamento-concluido', async (req, res) => {
+app.get("/pagamento-concluido", async (req, res) => {
   const { payment_id } = req.query;
 
   if (!payment_id) {
-    return res.status(400).send('ID do pagamento não fornecido.');
+    return res.status(400).send("ID do pagamento não fornecido.");
   }
 
   try {
-    const response = await fetch(`https://api.mercadopago.com/v1/payments/${payment_id}`, {
-      headers: {
-        Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`
+    const response = await fetch(
+      `https://api.mercadopago.com/v1/payments/${payment_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+        },
       }
-    });
+    );
 
     const pagamento = await response.json();
 
-    if (pagamento.status === 'approved') {
-      // Dados úteis
-      const nomeComprador = pagamento.payer?.first_name || 'Cliente';
-      const emailComprador = pagamento.payer?.email || 'sem email';
+    if (pagamento.status === "approved") {
+      const cpfLimpo = pagamento.external_reference;
+      const dados = dadosUsuarios.get(cpfLimpo);
+      if (!dados) {
+        console.warn("Dados do usuário não encontrados.");
+        return res.redirect("/aguardando.html");
+      }
+
+      // Gera o PDF novamente (melhor que depender do disco)
+      const htmlContent = gerarHtmlContrato(dados); // você pode mover o código HTML para uma função separada
+      const browser = await puppeteer.launch({ headless: "new" });
+      const page = await browser.newPage();
+      await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+      const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
+      await browser.close();
+
+      // Define link do formulário final com base no plano
+      const linksFormularios = {
+        start360: "https://forms.gle/FORM_START",
+        essencial360: "https://forms.gle/FORM_ESSENCIAL",
+        prime360: "https://forms.gle/FORM_PRIME",
+      };
+
+      const linkFormulario =
+        linksFormularios[
+          Object.keys(linksFormularios).find((key) =>
+            dados.planoEscolhido.toLowerCase().includes(key)
+          )
+        ] || "https://controlefinanceiro360.com.br";
 
       // Enviar email para o comprador
       const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        service: "gmail",
         auth: {
           user: process.env.EMAIL_REMETENTE,
           pass: process.env.EMAIL_SENHA,
-        }
+        },
       });
 
       await transporter.sendMail({
         from: process.env.EMAIL_REMETENTE,
-        to: emailComprador,
-        subject: 'Pagamento Aprovado - Obrigado pela sua compra!',
+        to: dados.email,
+        subject: "Seu contrato foi gerado com sucesso!",
         html: `
-            <h2>Olá, ${nomeComprador}!</h2>
-            <p>Recebemos seu pagamento com sucesso! 🎉</p>
-            <p>Obrigado por contratar nossos serviços. Em até 10 dias entraremos em contato com mais informações.</p>
-            <hr />
-            <p>Se tiver dúvidas, basta entrar em contato atráves de ${process.env.EMAIL_DESTINO}.</p>
-            <br>
-            <img src="cid:imgEmail" alt="Avensi" title="Avensi" style="height: auto;">
-          `,
+    <h2>Olá, ${dados.nome}!</h2>
+    <p>Recebemos seu pagamento e seu contrato foi gerado com sucesso.</p>
+    <p>Faça o preenchimento do formulário final por meio do link abaixo:</p>
+    <p><a href="${linkFormulario}" target="_blank">Clique aqui para preencher o formulário</a></p>
+    <p>Em até 10 dias nossa equipe entrará em contato com seu diagnóstico.</p>
+    <hr />
+    <p>Qualquer dúvida, envie um email para suporte@controlefinanceiro360.com.br.</p>
+  `,
+        attachments: [
+          {
+            filename: "contrato.pdf",
+            content: pdfBuffer,
+          },
+        ],
       });
 
-      console.log(`Pagamento confirmado e email enviado para ${emailComprador}`);
-      res.sendFile(path.join(__dirname, 'public', 'pagamento-concluido.html'));
+      console.log(`Contrato enviado para ${dados.email}`);
+      dadosUsuarios.delete(cpfLimpo); // limpa da memória
+      res.sendFile(path.join(__dirname, "public", "pagamento-concluido.html"));
     } else {
-      return res.redirect('/aguardando.html');
+      return res.redirect("/aguardando.html");
     }
-
-
   } catch (err) {
-    console.error('Erro ao verificar pagamento:', err);
-    res.status(500).send('Erro interno ao verificar pagamento.');
+    console.error("Erro ao verificar pagamento:", err);
+    res.status(500).send("Erro interno ao verificar pagamento.");
   }
 });
 
@@ -127,29 +161,32 @@ app.get('/pagamento-concluido', async (req, res) => {
 const pagamentosAprovados = new Map();
 
 // Webhook para notificações do Mercado Pago
-app.post('/webhook', express.json(), async (req, res) => {
+app.post("/webhook", express.json(), async (req, res) => {
   const { type, data } = req.body;
 
-  if (type === 'payment') {
+  if (type === "payment") {
     const paymentId = data.id;
 
     try {
-      const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-        headers: {
-          Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`
+      const response = await fetch(
+        `https://api.mercadopago.com/v1/payments/${paymentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+          },
         }
-      });
+      );
 
       const pagamento = await response.json();
 
-    if (pagamento.status === "approved") {
-      const cpf = pagamento.external_reference;
-      pagamentosAprovados.set(cpf, true);
-      console.log(`Pagamento aprovado via webhook | CPF: ${cpf}`);
-    }
+      if (pagamento.status === "approved") {
+        const cpf = pagamento.external_reference;
+        pagamentosAprovados.set(cpf, true);
+        console.log(`Pagamento aprovado via webhook | CPF: ${cpf}`);
+      }
       res.sendStatus(200);
     } catch (error) {
-      console.error('Erro ao consultar pagamento no webhook:', error);
+      console.error("Erro ao consultar pagamento no webhook:", error);
       res.sendStatus(500);
     }
   } else {
@@ -157,19 +194,19 @@ app.post('/webhook', express.json(), async (req, res) => {
   }
 });
 
-app.get('/verifica-pagamento', (req, res) => {
+app.get("/verifica-pagamento", (req, res) => {
   const { payment_id } = req.query;
 
   if (!payment_id) {
-    return res.status(400).send('ID do pagamento não fornecido.');
+    return res.status(400).send("ID do pagamento não fornecido.");
   }
 
   if (pagamentosAprovados.has(payment_id)) {
     // Redireciona para o formulário final
-    return res.redirect('/pagamento-concluido.html');
+    return res.redirect("/pagamento-concluido.html");
   } else {
     // Redireciona para uma página avisando que o pagamento ainda não foi aprovado
-    return res.redirect('/aguardando.html');
+    return res.redirect("/aguardando.html");
   }
 });
 
@@ -193,8 +230,24 @@ app.post("/gerar-pdf", async (req, res) => {
     endereco,
     planoEscolhido,
     valorPago,
-    formaPagamento
+    formaPagamento,
+    email,
   } = req.body;
+  console.log("Dados recebidos:", req.body);
+
+  switch (planoEscolhido) {
+    case "planoBasico":
+      valorPago = 19.99;
+      break;
+    case "planoIntermediario":
+      valorPago = 149.97;
+      break;
+    case "planoAvancado":
+      valorPago = 2399.88;
+      break;
+    default:
+      return res.status(400).send("Plano inválido.");
+  }
   console.log(req.body);
   const htmlContent = `
     <!DOCTYPE html>
@@ -271,6 +324,16 @@ app.post("/gerar-pdf", async (req, res) => {
       "Content-Disposition": "attachment; filename=contrato.pdf",
       "Content-Length": pdfBuffer.length,
     });
+    // Salva os dados temporariamente usando o CPF como chave
+    dadosUsuarios.set(cpf.replace(/\D/g, ""), {
+      nome,
+      email,
+      rg,
+      endereco,
+      planoEscolhido,
+      valorPago,
+      formaPagamento,
+    });
 
     res.send(pdfBuffer);
   } catch (err) {
@@ -296,22 +359,23 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-app.post('/api/finalizar', upload.single('contrato'), async (req, res) => {
-  const { nome, email, telefone, idade, renda, despesas, dividas, objetivos } = req.body;
+app.post("/api/finalizar", upload.single("contrato"), async (req, res) => {
+  const { nome, email, telefone, idade, renda, despesas, dividas, objetivos } =
+    req.body;
   const contratoPath = req.file.path;
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail', 
+    service: "gmail",
     auth: {
       user: process.env.EMAIL_REMETENTE,
-      pass: process.env.EMAIL_SENHA, 
-    }
+      pass: process.env.EMAIL_SENHA,
+    },
   });
 
   const mailOptions = {
     from: process.env.EMAIL_REMETENTE,
     to: process.env.EMAIL_DESTINO,
-    subject: 'Novo envio de contrato assinado',
+    subject: "Novo envio de contrato assinado",
     html: `
       <h3>Informações do usuário:</h3>
       <p><strong>Nome:</strong> ${nome}</p>
@@ -326,9 +390,9 @@ app.post('/api/finalizar', upload.single('contrato'), async (req, res) => {
     attachments: [
       {
         filename: req.file.originalname,
-        path: contratoPath
-      }
-    ]
+        path: contratoPath,
+      },
+    ],
   };
 
   try {
@@ -336,8 +400,8 @@ app.post('/api/finalizar', upload.single('contrato'), async (req, res) => {
     fs.unlinkSync(contratoPath);
     res.sendFile(__dirname + "/public/finalizado.html");
   } catch (error) {
-    console.error('Erro ao enviar email:', error);
-    res.status(500).send('Erro ao enviar o email.');
+    console.error("Erro ao enviar email:", error);
+    res.status(500).send("Erro ao enviar o email.");
   }
 });
 

@@ -30,8 +30,8 @@
 
 <body>
     <header>
-        <a id="logo" title="Logo" href="https://www.controlefinanceiro360.com.br"><img class="img-responsive" loading="lazy" title="Logo"
-                src="/images/logo-header.webp" alt="Logo" /></a>
+        <a id="logo" title="Logo" href="https://www.controlefinanceiro360.com.br"><img class="img-responsive"
+                loading="lazy" title="Logo" src="/images/logo-header.webp" alt="Logo" /></a>
         <nav id="nav">
             <button aria-label="Abrir Menu" id="btn-mobile" aria-haspopup="true" aria-controls="menu"
                 aria-expanded="false">
@@ -70,7 +70,8 @@
             <div class="container">
                 <div class="content-sec-one">
                     <h2>Leia o contrato e preencha seus dados</h2>
-                    <p><strong>Após preencher os dados, faça o download do contrato e assine digitalmente.</strong></p>
+                    <p><strong>Após preencher os dados e confirmar a leitura, você será redirecionado para o
+                            pagamento.</strong></p>
                     <h3>Visualize o contrato base:</h3>
                     <div id="pdf-render">Carregando contrato...</div>
 
@@ -79,6 +80,9 @@
                     <form id="form-contrato">
                         <label for="nome">Nome completo:</label>
                         <input type="text" id="nome" name="nome" required />
+
+                        <label for="email">E-mail:</label>
+                        <input type="email" id="email" name="email" required>
 
                         <label for="cpf">CPF:</label>
                         <input type="text" id="cpf" name="cpf" required />
@@ -95,14 +99,21 @@
                         </select>
 
                         <label for="endereco">Endereço completo:</label>
-                        <input type="text" id="endereco" name="endereco" required></input>
+                        <input type="text" id="endereco" name="endereco" required>
 
-                        <button type="button" id="btnGerarPDF">GERAR CONTRATO PREENCHIDO EM PDF <i
-                                class="fa-solid fa-file-arrow-down"></i></button>
+                        <div style="margin-top: 20px;">
+                            <label>
+                                <input type="checkbox" id="confirmacaoContrato" required />
+                                Declaro que li, estou ciente e concordo com os termos estabelecidos neste contrato.
+                            </label>
+                        </div>
+
                     </form>
 
 
-                    <button id="btnPagamento" style="display: none;">PAGAR COM MERCADO PAGO <i class="fa-solid fa-lock"></i></button>
+                    <button id="btnPagamento" disabled style="margin-top: 20px;">PAGAR COM MERCADO PAGO <i
+                            class="fa-solid fa-lock"></i></button>
+
                 </div>
             </div>
         </section>
@@ -122,27 +133,33 @@
                     <h3>INSTITUCIONAL</h3>
                     <ul>
                         <li>
-                            <a title="Clique aqui para ser direcionado a página INICIAL" href="https://www.controlefinanceiro360.com.br"><i
+                            <a title="Clique aqui para ser direcionado a página INICIAL"
+                                href="https://www.controlefinanceiro360.com.br"><i
                                     class="fa-solid fa-chevron-right"></i>INÍCIO</a>
                         </li>
                         <li>
-                            <a title="Clique aqui para ser direcionado a página INICIAL" href="https://www.controlefinanceiro360.com.br"><i
+                            <a title="Clique aqui para ser direcionado a página INICIAL"
+                                href="https://www.controlefinanceiro360.com.br"><i
                                     class="fa-solid fa-chevron-right"></i>SERVIÇOS</a>
                         </li>
                         <li>
-                            <a title="Clique aqui para ser direcionado a página INICIAL" href="https://www.controlefinanceiro360.com.br"><i
+                            <a title="Clique aqui para ser direcionado a página INICIAL"
+                                href="https://www.controlefinanceiro360.com.br"><i
                                     class="fa-solid fa-chevron-right"></i>SOBRE NÓS</a>
                         </li>
                         <li>
-                            <a title="Clique aqui para ser direcionado a página INICIAL" href="https://www.controlefinanceiro360.com.br"><i
+                            <a title="Clique aqui para ser direcionado a página INICIAL"
+                                href="https://www.controlefinanceiro360.com.br"><i
                                     class="fa-solid fa-chevron-right"></i>FEEDBACKS</a>
                         </li>
                         <li>
-                            <a title="Clique aqui para ser direcionado a página INICIAL" href="https://www.controlefinanceiro360.com.br"><i
+                            <a title="Clique aqui para ser direcionado a página INICIAL"
+                                href="https://www.controlefinanceiro360.com.br"><i
                                     class="fa-solid fa-chevron-right"></i>CONTATO</a>
                         </li>
                         <li>
-                            <a title="Clique aqui para ser direcionado a página INICIAL" href="https://www.controlefinanceiro360.com.br"><i
+                            <a title="Clique aqui para ser direcionado a página INICIAL"
+                                href="https://www.controlefinanceiro360.com.br"><i
                                     class="fa-solid fa-chevron-right"></i>PLANOS E SERVIÇOS</a>
                         </li>
                         <li>
@@ -162,15 +179,6 @@
                         </li>
                     </ul>
                 </div>
-                <!-- <div class="col-lg-2 col-md-12 col-sm-12 col-xs-12 list-1">
-                    <h3>SOCIAL</h3>
-                    <ul>
-                        <li>
-                            <a title="Clique aqui para acessar o Instagram" href=""><i
-                                    class="fa-brands fa-instagram"></i>@</a>
-                        </li>
-                    </ul>
-                </div> -->
             </div>
             <div class="line"></div>
             <div class="dev">
@@ -191,9 +199,6 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const plano = urlParams.get('plano');
-
-        document.querySelector('#plano-escolhido').textContent = plano.toUpperCase();
-        document.querySelector('#inputPlano').value = plano;
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script>
@@ -235,63 +240,22 @@
         renderPDF();
     </script>
 
-    <!-- Scripts para gerar PDF e fazer upload -->
     <script>
-        const planospdf = {
-            start360: { titulo: "Start 360", valor: 9.99 }, //aqui é valor em real inteiro
-            essencial360: { titulo: "Essencial 360", valor: 49.99 },
-            prime360: { titulo: "Prime 360", valor: 199.99 }
-        };
 
-        document.getElementById('btnGerarPDF').addEventListener('click', async () => {
-            const form = document.getElementById('form-contrato');
-            const formData = Object.fromEntries(new FormData(form));
+        const form = document.getElementById('form-contrato');
+        const nome = document.getElementById('nome');
+        const cpf = document.getElementById('cpf');
+        const rg = document.getElementById('rg');
+        const end = document.getElementById('endereco');
+        const pagamento = document.getElementById('formaPagamento');
+        const checkbox = document.getElementById("confirmacaoContrato");
+        const botao = document.getElementById("btnPagamento");
+        const email = document.getElementById("email");
 
-            const planoSelecionadoo = new URLSearchParams(window.location.search).get('plano');
-            const itens = planospdf[planoSelecionadoo];
-
-            if (!itens) {
-                alert("Plano não identificado.");
-                return;
-            }
-
-            // Adiciona os campos do plano ao formData
-            formData.valorPago = itens.valor;
-            formData.planoEscolhido = itens.titulo;
-
-            const res = await fetch('/gerar-pdf', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-
-            if (res.ok) {
-                const blob = await res.blob();
-                const url = URL.createObjectURL(blob);
-
-                // Cria link invisível e dispara o download
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'contrato.pdf';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                URL.revokeObjectURL(url);
-
-                // Exibe botão de pagamento
-                document.getElementById('btnPagamento').style.display = 'block';
-            } else {
-                alert('Erro ao gerar contrato.');
-            }
-        });
-    </script>
-
-
-    <script>
         const planos = {
             start360: { titulo: "Start 360 - Controle Financeiro 360", valor: 999 }, //aqui é valor em real com centavos ex: 100 = 1,00
-            essencial360: { titulo: "Essencial 360 - Controle Financeiro 360", valor: 4999 },
-            prime360: { titulo: "Prime 360 - Controle Financeiro 360", valor: 19999 }
+            essencial360: { titulo: "Essencial 360 - Controle Financeiro 360", valor: 14997 },
+            prime360: { titulo: "Prime 360 - Controle Financeiro 360", valor: 239988 }
         };
 
         document.getElementById('btnPagamento').addEventListener('click', async () => {
@@ -314,7 +278,13 @@
                     },
                     body: JSON.stringify({
                         valorPago: item.valor,
-                        planoEscolhido: item.titulo
+                        planoEscolhido: item.titulo,
+                        cpf: cpf.value,
+                        nome: nome.value,
+                        rg: rg.value,
+                        endereco: end.value,
+                        formaPagamento: pagamento.value,
+                        email: email.value
                     })
                 });
 
@@ -385,24 +355,19 @@
             }
         }
 
-        const form = document.getElementById('form-contrato');
-        const nome = document.getElementById('nome');
-        const cpf = document.getElementById('cpf');
-        const rg = document.getElementById('rg');
-        const end = document.getElementById('endereco');
-        const pagamento = document.getElementById('formaPagamento');
-        const botao = document.getElementById('btnGerarPDF');
+
 
         function checarFormulario() {
             const tudoValido =
                 nome.value.trim() !== '' &&
                 end.value.trim() !== '' &&
-                pagamento.value !== '' &&             
+                pagamento.value !== '' &&
                 validarCPF(cpf.value) &&
                 validarRG(rg.value) &&
-                !form.querySelector('[data-erro]');  
+                !form.querySelector('[data-erro]');
 
             botao.disabled = !tudoValido;
+            console.log('Formulário válido:', tudoValido);
         }
 
         cpf.addEventListener('input', () => {
@@ -417,6 +382,8 @@
             checarFormulario();
         });
 
+        email.addEventListener('input', validarFormContrato);
+
         [nome, end].forEach(el =>
             el.addEventListener('input', checarFormulario)
         );
@@ -430,7 +397,29 @@
         });
 
         checarFormulario();
+        // Validação do formulário de contrato
+
+        function validarEmail(valor) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
+        }
+
+        function validarFormContrato() {
+            const nomeOk = nome.value.trim() !== '';
+            const cpfOk = validarCPF(cpf.value);
+            const rgOk = validarRG(rg.value);
+            const enderecoOk = end.value.trim() !== '';
+            const pagamentoOk = pagamento.value !== '';
+            const checkboxOk = checkbox.checked;
+            const emailOk = validarEmail(email.value);
+
+            botao.disabled = !(nomeOk && cpfOk && rgOk && enderecoOk && pagamentoOk && checkboxOk && emailOk);
+        }
+
+        checkbox.addEventListener('change', validarFormContrato);
+        [nome, cpf, rg, end, pagamento].forEach(el => el.addEventListener('input', validarFormContrato));
+        pagamento.addEventListener('change', validarFormContrato);
     </script>
+
 
 
 
