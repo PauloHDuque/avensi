@@ -42,14 +42,15 @@
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get("ref"); // CPF limpo
+    const paymentId = urlParams.get("payment_id");
 
-    if (!ref) {
-      document.body.innerHTML = "<h3>Erro: Referência não encontrada na URL.</h3>";
+    if (!paymentId) {
+      document.body.innerHTML = "<h3>Erro: ID do pagamento não encontrado na URL.</h3>";
+      console.error("payment_id ausente na URL.");
     } else {
       const verificar = async () => {
         try {
-          const res = await fetch(`/verifica-pagamento?ref=${ref}`);
+          const res = await fetch(`/verifica-pagamento?payment_id=${paymentId}`);
           const json = await res.json();
 
           if (json.aprovado) {
@@ -60,9 +61,11 @@
         }
       };
 
+      // Verifica a cada 5 segundos
       setInterval(verificar, 5000);
     }
   </script>
+
 
 
 

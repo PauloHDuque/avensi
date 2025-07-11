@@ -180,9 +180,8 @@ app.post("/webhook", express.json(), async (req, res) => {
       const pagamento = await response.json();
 
       if (pagamento.status === "approved") {
-        const cpf = pagamento.external_reference;
-        pagamentosAprovados.set(cpf, true);
-        console.log(`Pagamento aprovado via webhook | CPF: ${cpf}`);
+        pagamentosAprovados.set(pagamento.id.toString(), true);
+        console.log(`Pagamento aprovado via webhook | ID: ${pagamento.id}`);
       }
       res.sendStatus(200);
     } catch (error) {
@@ -195,13 +194,13 @@ app.post("/webhook", express.json(), async (req, res) => {
 });
 
 app.get("/verifica-pagamento", (req, res) => {
-  const { ref } = req.query; // ref = CPF limpo
+  const { payment_id } = req.query;
 
-  if (!ref) {
-    return res.status(400).json({ erro: "CPF não fornecido." });
+  if (!payment_id) {
+    return res.status(400).json({ erro: "ID do pagamento não fornecido." });
   }
 
-  if (pagamentosAprovados.has(ref)) {
+  if (pagamentosAprovados.has(payment_id)) {
     return res.json({ aprovado: true });
   } else {
     return res.json({ aprovado: false });
