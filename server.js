@@ -15,56 +15,6 @@ const PORT = process.env.PORT || 3000;
 
 const dadosUsuarios = new Map(); // chave: cpf, valor: { nome, email, rg, endereco, planoEscolhido, valorPago, formaPagamento }
 
-app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, "public")));
-app.use("/styles", express.static(path.join(__dirname, "styles")));
-app.use("/js", express.static(path.join(__dirname, "js")));
-app.use("/images", express.static(path.join(__dirname, "images")));
-
-app.get("/api", (req, res) => {
-  res.send(`Api funcionando! na porta ${PORT}`);
-});
-
-// Endpoint para criar pagamento
-const client = new MercadoPagoConfig({
-  accessToken: process.env.MP_ACCESS_TOKEN,
-});
-
-app.post("/criar-preferencia", async (req, res) => {
-  const { titulo, preco, cpf } = req.body;
-
-  const preferenceData = {
-    items: [
-      {
-        title: titulo,
-        unit_price: preco / 100, // Preço em reais
-        description: "Relatório de Planejamento Financeiro",
-        currency_id: "BRL",
-        quantity: 1,
-      },
-    ],
-    external_reference: cpf,
-    back_urls: {
-      success: `${process.env.BASE_URL}/pagamento-concluido`,
-      failure: `${process.env.BASE_URL}/pagamento-falhou`,
-      pending: `${process.env.BASE_URL}/pagamento-pendente`,
-    },
-    notification_url: `${process.env.BASE_URL}/webhook`,
-    auto_return: "approved",
-  };
-
-  try {
-    const preference = new Preference(client);
-    const response = await preference.create({ body: preferenceData });
-    res.json({ init_point: response.init_point });
-  } catch (error) {
-    console.error("Erro ao criar preferência:", error);
-    res.status(500).json({ error: "Erro ao criar pagamento" });
-  }
-});
-
 function gerarHtmlContrato(dados) {
   const {
     nome,
@@ -158,6 +108,56 @@ function gerarHtmlContrato(dados) {
     </html>
   `;
 }
+
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, "public")));
+app.use("/styles", express.static(path.join(__dirname, "styles")));
+app.use("/js", express.static(path.join(__dirname, "js")));
+app.use("/images", express.static(path.join(__dirname, "images")));
+
+app.get("/api", (req, res) => {
+  res.send(`Api funcionando! na porta ${PORT}`);
+});
+
+// Endpoint para criar pagamento
+const client = new MercadoPagoConfig({
+  accessToken: process.env.MP_ACCESS_TOKEN,
+});
+
+app.post("/criar-preferencia", async (req, res) => {
+  const { titulo, preco, cpf } = req.body;
+
+  const preferenceData = {
+    items: [
+      {
+        title: titulo,
+        unit_price: preco / 100, // Preço em reais
+        description: "Relatório de Planejamento Financeiro",
+        currency_id: "BRL",
+        quantity: 1,
+      },
+    ],
+    external_reference: cpf,
+    back_urls: {
+      success: `${process.env.BASE_URL}/pagamento-concluido`,
+      failure: `${process.env.BASE_URL}/pagamento-falhou`,
+      pending: `${process.env.BASE_URL}/pagamento-pendente`,
+    },
+    notification_url: `${process.env.BASE_URL}/webhook`,
+    auto_return: "approved",
+  };
+
+  try {
+    const preference = new Preference(client);
+    const response = await preference.create({ body: preferenceData });
+    res.json({ init_point: response.init_point });
+  } catch (error) {
+    console.error("Erro ao criar preferência:", error);
+    res.status(500).json({ error: "Erro ao criar pagamento" });
+  }
+});
 
 // Endpoint chamado após pagamento aprovado
 app.get("/pagamento-concluido", async (req, res) => {
