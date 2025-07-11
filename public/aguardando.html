@@ -41,25 +41,28 @@
   <div class="spinner"></div>
 
   <script>
-    const cpf = localStorage.getItem("cpf");
-    console.log("CPF armazenado:", cpf);
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentId = urlParams.get("payment_id");
 
-    if (!cpf) {
-      document.body.innerHTML = "<h3>Erro: CPF não encontrado.</h3>";
-      console.error("CPF não encontrado no localStorage.");
+    if (!paymentId) {
+      document.body.innerHTML = "<h3>Erro: ID do pagamento não encontrado.</h3>";
+      console.error("payment_id não encontrado na URL.");
     } else {
       const verificar = async () => {
-        const res = await fetch(`/verifica-status?ref=${cpf}`);
-        const json = await res.json();
-        if (json.aprovado) {
-          console.log("Pagamento aprovado:", json);
-          window.location.href = "/pagamento-concluido.html";
+        try {
+          const response = await fetch(`/verifica-pagamento?payment_id=${paymentId}`);
+          if (response.redirected) {
+            window.location.href = response.url;
+          }
+        } catch (err) {
+          console.error("Erro ao verificar pagamento:", err);
         }
       };
 
       setInterval(verificar, 5000);
     }
   </script>
+
 
 </body>
 
