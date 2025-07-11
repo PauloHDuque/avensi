@@ -223,7 +223,7 @@ app.get("/contrato", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "contract.html"));
 });
 
-app.post("/gerar-pdf", async (req, res) => {
+function gerarHtmlContrato(dados) {
   const {
     nome,
     cpf,
@@ -232,13 +232,12 @@ app.post("/gerar-pdf", async (req, res) => {
     planoEscolhido,
     valorPago,
     formaPagamento,
-    email,
     cidade,
-  } = req.body;
-  console.log("Dados recebidos:", req.body);
-  const valorPagoContrato = valorPago / 100;
-  let vigencia = "";
+  } = dados;
 
+  const valorPagoContrato = valorPago / 100;
+
+  let vigencia = "";
   switch (planoEscolhido) {
     case "Start 360":
       vigencia = "30 dias";
@@ -250,16 +249,16 @@ app.post("/gerar-pdf", async (req, res) => {
       vigencia = "12 meses";
       break;
     default:
-      return res.status(400).send("Plano inválido.");
+      vigencia = "30 dias";
   }
+
   const dataHoje = new Date().toLocaleDateString("pt-BR", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   });
-  console.log(dataHoje);
-  console.log(req.body);
-  const htmlContent = `
+
+  return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -301,7 +300,7 @@ app.post("/gerar-pdf", async (req, res) => {
       <p>6.2 O serviço prestado tem caráter consultivo e informativo, não se caracterizando como garantia de resultados futuros.</p>
       <h3>CLÁUSULA 7 – DA RESCISÃO E VIGÊNCIA</h3>
       <p>7.1 Este contrato poderá ser rescindido dentro prazo de 7 dias corridos após a confirmação de pagamento, mediante notificação por escrito no e-mail suporte@controlefinanceiro360.com.br </p>
-      <p>7.2 O presente contrato terá vigência de ${vigencia} após a confirmação de pagamento."</p>
+      <p>7.2 O presente contrato terá vigência de ${vigencia} após a confirmação de pagamento.</p>
       <h3>CLÁUSULA 8 – DO FORO</h3>
       <p>8.1 Para dirimir quaisquer controvérsias oriundas deste contrato, as partes elegem o foro da Comarca de São Paulo - SP com renúncia a qualquer outro, por mais privilegiado que seja.</p>
       <p>E por estarem assim justos e contratados, firmam o presente instrumento em meio digital.</p>
@@ -316,12 +315,26 @@ app.post("/gerar-pdf", async (req, res) => {
     </body>
     </html>
   `;
+}
+
+app.post("/gerar-pdf", async (req, res) => {
+  const dados = req.body;
+  console.log("Dados recebidos:", dados);
+
+  // Validação do plano
+  const planosValidos = ["Start 360", "Essencial 360", "Prime 360"];
+  if (!planosValidos.includes(dados.planoEscolhido)) {
+    return res.status(400).send("Plano inválido.");
+  }
 
   try {
+    const htmlContent = gerarHtmlContrato(dados);
+
     const browser = await puppeteer.launch({
       headless: "new",
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
+
     const page = await browser.newPage();
     await page.setContent(htmlContent, { waitUntil: "networkidle0" });
 
@@ -337,15 +350,16 @@ app.post("/gerar-pdf", async (req, res) => {
       "Content-Disposition": "attachment; filename=contrato.pdf",
       "Content-Length": pdfBuffer.length,
     });
-    // Salva os dados temporariamente usando o CPF como chave
-    dadosUsuarios.set(cpf.replace(/\D/g, ""), {
-      nome,
-      email,
-      rg,
-      endereco,
-      planoEscolhido,
-      valorPago,
-      formaPagamento,
+
+    dadosUsuarios.set(dados.cpf.replace(/\D/g, ""), {
+      nome: dados.nome,
+      email: dados.email,
+      rg: dados.rg,
+      endereco: dados.endereco,
+      planoEscolhido: dados.planoEscolhido,
+      valorPago: dados.valorPago,
+      formaPagamento: dados.formaPagamento,
+      cidade: dados.cidade,
     });
 
     res.send(pdfBuffer);
