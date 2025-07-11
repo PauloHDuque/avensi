@@ -96,6 +96,7 @@ app.get("/pagamento-concluido", async (req, res) => {
 
       // Gera o PDF novamente (melhor que depender do disco)
       const htmlContent = gerarHtmlContrato(dados);
+      console.log("HTML gerado para o contrato:", htmlContent);
       const browser = await puppeteer.launch({
         headless: "new",
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -119,7 +120,7 @@ app.get("/pagamento-concluido", async (req, res) => {
             dados.planoEscolhido.toLowerCase().includes(key)
           )
         ] || "https://controlefinanceiro360.com.br";
-
+      console.log("Link do formulário:", linkFormulario);
       // Enviar email para o comprador
       const transporter = nodemailer.createTransport({
         service: "gmail",

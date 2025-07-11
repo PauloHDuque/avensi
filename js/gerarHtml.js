@@ -1,4 +1,5 @@
 function gerarHtmlContrato(dados) {
+  console.log("cheguei em gerarHtmlContrato com: ", dados);
   const {
     nome,
     cpf,
