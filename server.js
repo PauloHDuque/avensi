@@ -95,7 +95,15 @@ app.get("/pagamento-concluido", async (req, res) => {
       }
 
       // Gera o PDF novamente (melhor que depender do disco)
-      const htmlContent = gerarHtmlContrato(dados);
+      let htmlContent;
+      try {
+        htmlContent = gerarHtmlContrato(dados);
+        console.log("✅ HTML gerado:", htmlContent.slice(0, 150));
+      } catch (err) {
+        console.error("❌ Erro na geração do HTML:", err);
+        console.error("🔍 Dados recebidos:", dados);
+        return res.status(500).send("Erro ao gerar contrato.");
+      }
       console.log("HTML gerado para o contrato:", htmlContent);
       const browser = await puppeteer.launch({
         headless: "new",
