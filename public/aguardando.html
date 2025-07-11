@@ -42,19 +42,22 @@
 
   <script>
     const cpf = localStorage.getItem("cpf");
+    console.log("CPF armazenado:", cpf);
 
     if (!cpf) {
       document.body.innerHTML = "<h3>Erro: CPF não encontrado.</h3>";
+      console.error("CPF não encontrado no localStorage.");
     } else {
       const verificar = async () => {
         const res = await fetch(`/verifica-status?ref=${cpf}`);
         const json = await res.json();
         if (json.aprovado) {
+          console.log("Pagamento aprovado:", json);
           window.location.href = "/pagamento-concluido.html";
         }
       };
 
-      setInterval(verificar, 10000);
+      setInterval(verificar, 5000);
     }
   </script>
 
