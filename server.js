@@ -49,7 +49,7 @@ app.post("/criar-preferencia", async (req, res) => {
     back_urls: {
       success: `${process.env.BASE_URL}/pagamento-concluido`,
       failure: `${process.env.BASE_URL}/pagamento-falhou`,
-      pending: `${process.env.BASE_URL}/verifica-pagamento`,
+      pending: `${process.env.BASE_URL}/pagamento-pendente`,
     },
     notification_url: `${process.env.BASE_URL}/webhook`,
     auto_return: "approved",
@@ -195,23 +195,21 @@ app.post("/webhook", express.json(), async (req, res) => {
 });
 
 app.get("/verifica-pagamento", (req, res) => {
-  const { payment_id } = req.query;
+  const { ref } = req.query; // ref = CPF limpo
 
-  if (!payment_id) {
-    return res.status(400).send("ID do pagamento não fornecido.");
+  if (!ref) {
+    return res.status(400).json({ erro: "CPF não fornecido." });
   }
 
-  if (pagamentosAprovados.has(payment_id)) {
-    // Redireciona para o formulário final
-    return res.redirect("/pagamento-concluido.html");
+  if (pagamentosAprovados.has(ref)) {
+    return res.json({ aprovado: true });
   } else {
-    // Redireciona para uma página avisando que o pagamento ainda não foi aprovado
-    return res.redirect("/aguardando.html");
+    return res.json({ aprovado: false });
   }
 });
 
 app.get("/pagamento-pendente", (req, res) => {
-  res.sendFile(__dirname + "/public/aguardando.html");
+  res.sendFile(path.join(__dirname, "public", "aguardando.html"));
 });
 
 app.get("/pagamento-falhou", (req, res) => {
