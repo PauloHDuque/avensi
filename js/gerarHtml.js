@@ -1,43 +1,44 @@
 function gerarHtmlContrato(dados) {
   console.log("cheguei em gerarHtmlContrato com: ", dados);
-  const {
-    nome,
-    cpf,
-    rg,
-    endereco,
-    planoEscolhido,
-    valorPago,
-    formaPagamento,
-    cidade,
-  } = dados;
+  try {
+    const {
+      nome,
+      cpf,
+      rg,
+      endereco,
+      planoEscolhido,
+      valorPago,
+      formaPagamento,
+      cidade,
+    } = dados;
 
-  const valorPagoContrato = (valorPago / 100).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
+    const valorPagoContrato = (valorPago / 100).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
 
-  let vigencia = "";
-  switch (planoEscolhido) {
-    case "Start 360":
-      vigencia = "30 dias";
-      break;
-    case "Essencial 360":
-      vigencia = "3 meses";
-      break;
-    case "Prime 360":
-      vigencia = "12 meses";
-      break;
-    default:
-      vigencia = "30 dias";
-  }
+    let vigencia = "";
+    switch (planoEscolhido) {
+      case "Start 360":
+        vigencia = "30 dias";
+        break;
+      case "Essencial 360":
+        vigencia = "3 meses";
+        break;
+      case "Prime 360":
+        vigencia = "12 meses";
+        break;
+      default:
+        vigencia = "30 dias";
+    }
 
-  const dataHoje = new Date().toLocaleDateString("pt-BR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
+    const dataHoje = new Date().toLocaleDateString("pt-BR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
 
-  return `
+    const html = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -94,6 +95,12 @@ function gerarHtmlContrato(dados) {
     </body>
     </html>
   `;
+    console.log("HTML gerado com sucesso");
+    return html;
+  } catch (error) {
+    console.error("Erro ao gerar HTML do contrato:", error);
+    throw new Error("Erro ao gerar HTML do contrato");
+  }
 }
 
 module.exports = gerarHtmlContrato;
