@@ -98,10 +98,29 @@ app.get("/pagamento-concluido", async (req, res) => {
       const htmlContent = gerarHtmlContrato(dados);
       console.log("HTML gerado para o contrato:", htmlContent);
 
-      const browser = await puppeteer.launch({
-        headless: true,
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      });
+      let browser;
+      try {
+        browser = await puppeteer.launch({
+          headless: true, // Use 'new' para a versão mais recente
+          args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage", // Adicione esta flag, muito útil em contêineres
+            "--single-process", // Pode ajudar em ambientes com poucos recursos
+          ],
+          executablePath: "/usr/bin/google-chrome-stable", // Opcional, mas recomendado
+        });
+        console.log("Puppeteer iniciado com sucesso!");
+      } catch (puppeteerError) {
+        console.error("!!!!!!!!!! FALHA AO INICIAR O PUPPETEER !!!!!!!!!!");
+        console.error(puppeteerError);
+        // Retorne um erro claro para o cliente para não deixar a requisição pendurada
+        return res
+          .status(500)
+          .send(
+            "Erro interno ao gerar o documento PDF. Falha no browser engine."
+          );
+      }
 
       const page = await browser.newPage();
       await page.setContent(htmlContent, { waitUntil: "networkidle0" });
