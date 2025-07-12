@@ -5,7 +5,7 @@ const cors = require("cors");
 const nodemailer = require("nodemailer");
 const path = require("path");
 const fetch = require("node-fetch");
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
 const fs = require("fs");
 const multer = require("multer");
 require("dotenv").config();
@@ -98,29 +98,16 @@ app.get("/pagamento-concluido", async (req, res) => {
       const htmlContent = gerarHtmlContrato(dados);
       console.log("HTML gerado para o contrato:", htmlContent);
 
-      let browser;
-      try {
-        browser = await puppeteer.launch({
-          headless: true, // Use 'new' para a versão mais recente
-          args: [
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--disable-dev-shm-usage", // Adicione esta flag, muito útil em contêineres
-            "--single-process", // Pode ajudar em ambientes com poucos recursos
-          ],
-          executablePath: "/usr/bin/google-chrome-stable", // Opcional, mas recomendado
-        });
-        console.log("Puppeteer iniciado com sucesso!");
-      } catch (puppeteerError) {
-        console.error("!!!!!!!!!! FALHA AO INICIAR O PUPPETEER !!!!!!!!!!");
-        console.error(puppeteerError);
-        // Retorne um erro claro para o cliente para não deixar a requisição pendurada
-        return res
-          .status(500)
-          .send(
-            "Erro interno ao gerar o documento PDF. Falha no browser engine."
-          );
-      }
+      const browser = await puppeteer.launch({
+        headless: "new",
+        // Caminho para o executável do Chrome que instalamos
+        executablePath: "/usr/bin/google-chrome-stable",
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+        ],
+      });
 
       const page = await browser.newPage();
       await page.setContent(htmlContent, { waitUntil: "networkidle0" });
@@ -260,7 +247,13 @@ app.post("/gerar-pdf", async (req, res) => {
 
     const browser = await puppeteer.launch({
       headless: "new",
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      // Caminho para o executável do Chrome que instalamos
+      executablePath: "/usr/bin/google-chrome-stable",
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ],
     });
 
     const page = await browser.newPage();
