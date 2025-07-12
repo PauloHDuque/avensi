@@ -35,36 +35,52 @@
 </head>
 
 <body>
-  <h2>Estamos aguardando a confirmação do seu pagamento via PIX...</h2>
-  <p>Isso pode levar alguns minutos. Assim que for confirmado, você será redirecionado automaticamente.</p>
+  <h2>Abra o link de pagamento para continuar</h2>
+  <p>Assim que o pagamento for confirmado, esta página será atualizada.</p>
+
+  <a id="link-pagamento" href="#" target="_blank" class="button-pagamento">CLIQUE AQUI PARA PAGAR</a>
 
   <div class="spinner"></div>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const paymentId = urlParams.get("payment_id");
+    const status = urlParams.get("status");
 
     if (!paymentId) {
       document.body.innerHTML = "<h3>Erro: ID do pagamento não encontrado na URL.</h3>";
       console.error("payment_id ausente na URL.");
     } else {
+      // Se o status já for 'approved', mostra uma mensagem mais otimista
+      if (status === 'approved') {
+        document.body.innerHTML = "<h2>Pagamento Aprovado!</h2><p>Estamos gerando seu contrato e enviando para seu e-mail. Aguarde um instante, você será redirecionado em breve...</p><div class='spinner'></div>";
+      }
+
       const verificar = async () => {
         try {
-          const res = await fetch(`/verifica-pagamento?payment_id=${paymentId}`);
+          // Chama a nova rota de verificação
+          const res = await fetch(`/verifica-processamento?payment_id=${paymentId}`);
           const json = await res.json();
 
-          if (json.aprovado) {
+          if (json.processado) {
+            // Redireciona para a página de sucesso. O e-mail já foi enviado pelo webhook.
             window.location.href = "/pagamento-concluido.html";
           }
         } catch (err) {
-          console.error("Erro ao verificar pagamento:", err);
+          console.error("Erro ao verificar processamento:", err);
         }
       };
 
-      // Verifica a cada 5 segundos
-      setInterval(verificar, 5000);
+      // Verifica a cada 3 segundos
+      const intervalId = setInterval(verificar, 3000);
+
+      // Para o loop após 5 minutos para não ficar rodando para sempre
+      setTimeout(() => {
+        clearInterval(intervalId);
+      }, 300000);
     }
   </script>
+
 
 
 

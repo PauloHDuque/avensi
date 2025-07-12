@@ -14,7 +14,7 @@ const gerarHtmlContrato = require("./js/gerarHtml.js"); // Importa a função de
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const dadosUsuarios = new Map(); // chave: cpf, valor: { nome, email, rg, endereco, planoEscolhido, valorPago, formaPagamento }
+const resultadosProcessados = new Map();
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -72,7 +72,7 @@ app.post("/criar-preferencia", async (req, res) => {
     ],
     external_reference: cpf,
     back_urls: {
-      success: `${process.env.BASE_URL}/pagamento-concluido`,
+      success: `${process.env.BASE_URL}/aguardando.html`,
       failure: `${process.env.BASE_URL}/pagamento-falhou`,
       pending: `${process.env.BASE_URL}/pagamento-pendente`,
     },
@@ -83,7 +83,7 @@ app.post("/criar-preferencia", async (req, res) => {
       rg,
       endereco,
       planoEscolhido,
-      valorPago: preco, // Use o preço recebido
+      valorPago: preco,
       formaPagamento,
       email,
       cidade,
@@ -101,153 +101,8 @@ app.post("/criar-preferencia", async (req, res) => {
 });
 
 // Endpoint chamado após pagamento aprovado
-app.get("/pagamento-concluido", async (req, res) => {
-  const { payment_id } = req.query;
-
-  if (!payment_id) {
-    return res.status(400).send("ID do pagamento não fornecido.");
-  }
-
-  try {
-    const response = await fetch(
-      `https://api.mercadopago.com/v1/payments/${payment_id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
-        },
-      }
-    );
-
-    const pagamento = await response.json();
-
-    // ======================= INÍCIO DO BLOCO DE DEPURAÇÃO =======================
-    console.log("----------------------------------------------------");
-    console.log("INSPECIONANDO RESPOSTA DO MERCADO PAGO");
-    console.log("Status do Pagamento:", pagamento.status);
-
-    // Verifique se o objeto 'pagamento' existe
-    if (!pagamento) {
-      console.error(
-        "ERRO CRÍTICO: Objeto 'pagamento' retornado pela API é nulo ou indefinido."
-      );
-      return res.status(500).send("Falha ao obter dados do pagamento.");
-    }
-
-    // Verifique se a propriedade 'metadata' existe ANTES de usá-la
-    if (pagamento.metadata) {
-      console.log("-> Objeto 'metadata' ENCONTRADO:", pagamento.metadata);
-    } else {
-      console.error(
-        "-> ALERTA: Objeto 'metadata' NÃO FOI ENCONTRADO na resposta do pagamento!"
-      );
-      // Para depuração, vamos imprimir o objeto de pagamento inteiro para ver o que veio
-      console.log(
-        "Objeto 'pagamento' completo recebido:",
-        JSON.stringify(pagamento, null, 2)
-      );
-    }
-    console.log("----------------------------------------------------");
-    // ======================== FIM DO BLOCO DE DEPURAÇÃO =========================
-
-    if (pagamento.status === "approved") {
-      if (!pagamento.metadata) {
-        console.error(
-          "Execução interrompida: metadata ausente em pagamento aprovado."
-        );
-        return res.status(500).send("Erro: Dados da transação incompletos.");
-      }
-      const cpfLimpo = pagamento.external_reference;
-      const dados = {
-        cpf: pagamento.external_reference,
-        nome: pagamento.metadata.nome,
-        rg: pagamento.metadata.rg,
-        endereco: pagamento.metadata.endereco,
-        planoEscolhido: pagamento.metadata.planoEscolhido, // Verifique os nomes exatos
-        valorPago: pagamento.metadata.valorPago,
-        formaPagamento: pagamento.metadata.formaPagamento,
-        email: pagamento.metadata.email,
-        cidade: pagamento.metadata.cidade,
-      };
-      console.log("variável dados antes do if:", dados);
-      if (!dados) {
-        console.warn("Dados do usuário não encontrados.");
-        return res.redirect("/aguardando.html");
-      }
-
-      // Gera o PDF novamente (melhor que depender do disco)
-      const htmlContent = gerarHtmlContrato(dados);
-      console.log("deu certo finalmente");
-
-      const browser = await puppeteer.launch({
-        headless: "new",
-        // Caminho para o executável do Chrome que instalamos
-        executablePath: "/usr/bin/google-chrome-stable",
-        args: [
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-dev-shm-usage",
-        ],
-      });
-
-      const page = await browser.newPage();
-      await page.setContent(htmlContent, { waitUntil: "networkidle0" });
-      const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
-      await browser.close();
-
-      // Define link do formulário final com base no plano
-      const linksFormularios = {
-        start360: "https://forms.gle/FORM_START",
-        essencial360: "https://forms.gle/FORM_ESSENCIAL",
-        prime360: "https://forms.gle/FORM_PRIME",
-      };
-
-      const linkFormulario =
-        linksFormularios[
-          Object.keys(linksFormularios).find((key) =>
-            dados.planoEscolhido.toLowerCase().includes(key)
-          )
-        ] || "https://controlefinanceiro360.com.br";
-      console.log("Link do formulário:", linkFormulario);
-      // Enviar email para o comprador
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_REMETENTE,
-          pass: process.env.EMAIL_SENHA,
-        },
-      });
-
-      await transporter.sendMail({
-        from: process.env.EMAIL_REMETENTE,
-        to: dados.email,
-        subject: "Seu contrato foi gerado com sucesso!",
-        html: `
-    <h2>Olá, ${dados.nome}!</h2>
-    <p>Recebemos seu pagamento e seu contrato foi gerado com sucesso.</p>
-    <p>Faça o preenchimento do formulário final por meio do link abaixo:</p>
-    <p><a href="${linkFormulario}" target="_blank">Clique aqui para preencher o formulário</a></p>
-    <p>Em até 10 dias nossa equipe entrará em contato com seu diagnóstico.</p>
-    <hr />
-    <p>Qualquer dúvida, envie um email para suporte@controlefinanceiro360.com.br.</p>
-  `,
-        attachments: [
-          {
-            filename: "contrato.pdf",
-            content: pdfBuffer,
-          },
-        ],
-      });
-
-      console.log(`Contrato enviado para ${dados.email}`);
-      dadosUsuarios.delete(cpfLimpo); // limpa da memória
-      res.sendFile(path.join(__dirname, "public", "pagamento-concluido.html"));
-    } else {
-      return res.redirect("/aguardando.html");
-    }
-  } catch (err) {
-    console.error("Erro ao verificar pagamento:", err);
-    res.status(500).send("Erro interno ao verificar pagamento.");
-  }
+app.get("/pagamento-concluido", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "pagamento-concluido.html"));
 });
 
 // Cache em memória para guardar os payments aprovados
@@ -261,28 +116,120 @@ app.post("/webhook", express.json(), async (req, res) => {
     const paymentId = data.id;
 
     try {
+      // Evita reprocessamento
+      if (resultadosProcessados.has(paymentId.toString())) {
+        return res.sendStatus(200);
+      }
+
       const response = await fetch(
         `https://api.mercadopago.com/v1/payments/${paymentId}`,
         {
-          headers: {
-            Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
-          },
+          headers: { Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}` },
         }
       );
-
       const pagamento = await response.json();
 
       if (pagamento.status === "approved") {
-        pagamentosAprovados.set(pagamento.id.toString(), true);
-        console.log(`Pagamento aprovado via webhook | ID: ${pagamento.id}`);
+        console.log(
+          `[WEBHOOK] Pagamento ${paymentId} aprovado. Iniciando processamento...`
+        );
+
+        if (!pagamento.metadata) {
+          console.error(
+            `[WEBHOOK] ERRO CRÍTICO: Metadata não encontrado no pagamento ${paymentId}`
+          );
+          return res.sendStatus(200); // Responde OK para não receber de novo.
+        }
+
+        const dados = {
+          cpf: pagamento.external_reference,
+          nome: pagamento.metadata.nome,
+          rg: pagamento.metadata.rg,
+          endereco: pagamento.metadata.endereco,
+          planoEscolhido: pagamento.metadata.planoEscolhido,
+          valorPago: pagamento.metadata.valorPago,
+          formaPagamento: pagamento.metadata.formaPagamento,
+          email: pagamento.metadata.email,
+          cidade: pagamento.metadata.cidade,
+        };
+
+        // 1. Gerar PDF
+        const htmlContent = gerarHtmlContrato(dados);
+        const browser = await puppeteer.launch({
+          headless: "new",
+          executablePath: "/usr/bin/google-chrome-stable",
+          args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+          ],
+        });
+        const page = await browser.newPage();
+        await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+        const pdfBuffer = await page.pdf({
+          format: "A4",
+          printBackground: true,
+        });
+        await browser.close();
+        console.log(`[WEBHOOK] PDF para ${paymentId} gerado.`);
+
+        // 2. Enviar Email
+        const linksFormularios = {
+          start360: "https://forms.gle/FORM_START",
+          essencial360: "https://forms.gle/FORM_ESSENCIAL",
+          prime360: "https://forms.gle/FORM_PRIME",
+        };
+        const linkFormulario =
+          linksFormularios[
+            Object.keys(linksFormularios).find((key) =>
+              dados.planoEscolhido.toLowerCase().includes(key)
+            )
+          ] || "https://controlefinanceiro360.com.br";
+
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_REMETENTE,
+            pass: process.env.EMAIL_SENHA,
+          },
+        });
+
+        await transporter.sendMail({
+          from: process.env.EMAIL_REMETENTE,
+          to: dados.email,
+          subject: "Seu contrato foi gerado com sucesso!",
+          html: `<h2>Olá, ${dados.nome}!</h2><p>Recebemos seu pagamento e seu contrato foi gerado com sucesso.</p><p>Faça o preenchimento do formulário final por meio do link abaixo:</p><p><a href="${linkFormulario}" target="_blank">Clique aqui para preencher o formulário</a></p><p>Em até 10 dias nossa equipe entrará em contato com seu diagnóstico.</p><hr /><p>Qualquer dúvida, envie um email para suporte@controlefinanceiro360.com.br.</p>`,
+          attachments: [{ filename: "contrato.pdf", content: pdfBuffer }],
+        });
+        console.log(`[WEBHOOK] E-mail para ${dados.email} enviado.`);
+
+        // 3. Marcar como processado
+        resultadosProcessados.set(paymentId.toString(), { success: true });
       }
       res.sendStatus(200);
     } catch (error) {
-      console.error("Erro ao consultar pagamento no webhook:", error);
-      res.sendStatus(500);
+      console.error(
+        `[WEBHOOK] Erro ao processar pagamento ${paymentId}:`,
+        error
+      );
+      res.sendStatus(500); // Envia erro para o MP tentar de novo, se for o caso.
     }
   } else {
-    res.sendStatus(200); // Ignora outros tipos de notificação
+    res.sendStatus(200);
+  }
+});
+
+// NOVA ROTA: Para o front-end verificar se o webhook já terminou o trabalho
+app.get("/verifica-processamento", (req, res) => {
+  const { payment_id } = req.query;
+  if (!payment_id) {
+    return res.status(400).json({ erro: "ID do pagamento não fornecido." });
+  }
+
+  if (resultadosProcessados.has(payment_id)) {
+    res.json({ processado: true });
+  } else {
+    res.json({ processado: false });
   }
 });
 

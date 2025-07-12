@@ -323,7 +323,8 @@
                 const data = await response.json();
 
                 if (data.init_point) {
-                    window.location.href = data.init_point;
+                    localStorage.setItem("mp_init_point", data.init_point);
+                    window.location.href = "/aguardando.html";
                 } else {
                     alert("Erro ao redirecionar para o pagamento.");
                 }
