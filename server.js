@@ -73,8 +73,8 @@ app.post("/criar-preferencia", async (req, res) => {
     external_reference: cpf,
     back_urls: {
       success: `${process.env.BASE_URL}/aguardando.html`,
-      failure: `${process.env.BASE_URL}/pagamento-falhou`,
-      pending: `${process.env.BASE_URL}/pagamento-pendente`,
+      failure: `${process.env.BASE_URL}/pagamento-falhou.html`,
+      pending: `${process.env.BASE_URL}/pagamento-pendente.html`,
     },
     notification_url: `${process.env.BASE_URL}/webhook`,
     auto_return: "approved",
@@ -297,17 +297,6 @@ app.post("/gerar-pdf", async (req, res) => {
       "Content-Type": "application/pdf",
       "Content-Disposition": "attachment; filename=contrato.pdf",
       "Content-Length": pdfBuffer.length,
-    });
-
-    dadosUsuarios.set(dados.cpf.replace(/\D/g, ""), {
-      nome: dados.nome,
-      email: dados.email,
-      rg: dados.rg,
-      endereco: dados.endereco,
-      planoEscolhido: dados.planoEscolhido,
-      valorPago: dados.valorPago,
-      formaPagamento: dados.formaPagamento,
-      cidade: dados.cidade,
     });
 
     res.send(pdfBuffer);

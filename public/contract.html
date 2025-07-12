@@ -110,14 +110,7 @@
                                 Declaro que li, estou ciente e concordo com os termos estabelecidos neste contrato.
                             </label>
                         </div>
-
-
-
-
-
-
                     </form>
-
 
                     <button id="btnPagamento" disabled style="margin-top: 20px;">PAGAR COM MERCADO PAGO <i
                             class="fa-solid fa-lock"></i></button>
@@ -275,63 +268,48 @@
                 return;
             }
 
+            // Validação final do formulário antes de prosseguir
+            if (botao.disabled) {
+                alert("Por favor, preencha todos os campos corretamente.");
+                return;
+            }
+
             const item = planos[planoSelecionado];
-            const cpfLimpo = document.getElementById('cpf').value.replace(/\D/g, '');
 
             try {
-                // Primeiro: gerar PDF com os dados do plano
-                await fetch("/gerar-pdf", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        valorPago: item.valor,
-                        planoEscolhido: item.titulo,
-                        cpf: cpf.value,
-                        nome: nome.value,
-                        rg: rg.value,
-                        endereco: end.value,
-                        formaPagamento: pagamento.value,
-                        email: email.value,
-                        cidade: cidade.value
-                    })
-                });
-
-                // Depois: criar preferência no Mercado Pago
+                // A única responsabilidade do front-end é criar a preferência
                 const response = await fetch("/criar-preferencia", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
+                    // Envia todos os dados necessários para o metadata
                     body: JSON.stringify({
                         titulo: item.titulo,
                         preco: item.valor,
-                        valorPago: item.valor,
-                        planoEscolhido: item.titulo,
-                        cpf: cpf.value,
-                        nome: nome.value,
-                        rg: rg.value,
-                        endereco: end.value,
-                        formaPagamento: pagamento.value,
-                        email: email.value,
-                        cidade: cidade.value
+                        cpf: document.getElementById('cpf').value,
+                        nome: document.getElementById('nome').value,
+                        rg: document.getElementById('rg').value,
+                        endereco: document.getElementById('endereco').value,
+                        formaPagamento: document.getElementById('formaPagamento').value,
+                        email: document.getElementById('email').value,
+                        cidade: document.getElementById('cidade').value,
+                        planoEscolhido: item.titulo
                     })
                 });
 
-                localStorage.setItem("cpf", cpfLimpo);
                 const data = await response.json();
 
                 if (data.init_point) {
-                    localStorage.setItem("mp_init_point", data.init_point);
-                    window.location.href = "/aguardando.html";
+                    // Redireciona o usuário para o link de pagamento do Mercado Pago
+                    window.location.href = data.init_point;
                 } else {
-                    alert("Erro ao redirecionar para o pagamento.");
+                    alert("Erro ao criar o link de pagamento.");
                 }
 
             } catch (error) {
-                alert("Erro ao iniciar o pagamento.");
-                console.error(error);
+                alert("Ocorreu um erro. Tente novamente.");
+                console.error("Erro no processo de pagamento:", error);
             }
         });
     </script>
