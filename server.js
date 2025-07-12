@@ -74,7 +74,7 @@ app.post("/criar-preferencia", async (req, res) => {
     back_urls: {
       success: `${process.env.BASE_URL}/aguardando.html`,
       failure: `${process.env.BASE_URL}/pagamento-falhou.html`,
-      pending: `${process.env.BASE_URL}/pagamento-pendente.html`,
+      pending: `${process.env.BASE_URL}/aguardando.html`,
     },
     notification_url: `${process.env.BASE_URL}/webhook`,
     auto_return: "approved",
@@ -132,6 +132,12 @@ app.post("/webhook", express.json(), async (req, res) => {
       if (pagamento.status === "approved") {
         console.log(
           `[WEBHOOK] Pagamento ${paymentId} aprovado. Iniciando processamento...`
+        );
+
+        // LOG DE DEPURAÇÃO:
+        console.log(
+          "[WEBHOOK] Metadata recebido:",
+          JSON.stringify(pagamento.metadata, null, 2)
         );
 
         if (!pagamento.metadata) {
