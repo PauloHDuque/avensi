@@ -34,7 +34,31 @@ const client = new MercadoPagoConfig({
 });
 
 app.post("/criar-preferencia", async (req, res) => {
-  const { titulo, preco, cpf } = req.body;
+  const {
+    titulo,
+    preco,
+    cpf,
+    nome,
+    rg,
+    endereco,
+    planoEscolhido,
+    formaPagamento,
+    email,
+    cidade,
+  } = req.body;
+
+  console.log("Dados recebidos para criar preferência:", {
+    titulo,
+    preco,
+    cpf,
+    nome,
+    rg,
+    endereco,
+    planoEscolhido,
+    formaPagamento,
+    email,
+    cidade,
+  });
 
   const preferenceData = {
     items: [
@@ -54,6 +78,16 @@ app.post("/criar-preferencia", async (req, res) => {
     },
     notification_url: `${process.env.BASE_URL}/webhook`,
     auto_return: "approved",
+    metadata: {
+      nome,
+      rg,
+      endereco,
+      planoEscolhido,
+      valorPago: preco, // Use o preço recebido
+      formaPagamento,
+      email,
+      cidade,
+    },
   };
 
   try {
@@ -88,7 +122,17 @@ app.get("/pagamento-concluido", async (req, res) => {
 
     if (pagamento.status === "approved") {
       const cpfLimpo = pagamento.external_reference;
-      const dados = dadosUsuarios.get(cpfLimpo);
+      const dados = {
+        cpf: pagamento.external_reference,
+        nome: pagamento.metadata.nome,
+        rg: pagamento.metadata.rg,
+        endereco: pagamento.metadata.endereco,
+        planoEscolhido: pagamento.metadata.plano_escolhido, // Verifique os nomes exatos
+        valorPago: pagamento.metadata.valor_pago,
+        formaPagamento: pagamento.metadata.forma_pagamento,
+        email: pagamento.metadata.email,
+        cidade: pagamento.metadata.cidade,
+      };
       if (!dados) {
         console.warn("Dados do usuário não encontrados.");
         return res.redirect("/aguardando.html");
