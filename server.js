@@ -152,9 +152,9 @@ app.post("/webhook", express.json(), async (req, res) => {
           nome: pagamento.metadata.nome,
           rg: pagamento.metadata.rg,
           endereco: pagamento.metadata.endereco,
-          planoEscolhido: pagamento.metadata.planoEscolhido,
-          valorPago: pagamento.metadata.valorPago,
-          formaPagamento: pagamento.metadata.formaPagamento,
+          planoEscolhido: pagamento.metadata.plano_escolhido,
+          valorPago: pagamento.metadata.valor_pago,
+          formaPagamento: pagamento.metadata.forma_pagamento,
           email: pagamento.metadata.email,
           cidade: pagamento.metadata.cidade,
         };
