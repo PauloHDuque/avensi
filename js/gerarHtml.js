@@ -95,7 +95,7 @@ function gerarHtmlContrato(dados) {
     </body>
     </html>
   `;
-    console.log("HTML gerado com sucesso");
+    console.log("HTML gerado com sucesso", html);
     return html;
   } catch (error) {
     console.error("Erro ao gerar HTML do contrato:", error);
