@@ -120,19 +120,55 @@ app.get("/pagamento-concluido", async (req, res) => {
 
     const pagamento = await response.json();
 
+    // ======================= INÍCIO DO BLOCO DE DEPURAÇÃO =======================
+    console.log("----------------------------------------------------");
+    console.log("INSPECIONANDO RESPOSTA DO MERCADO PAGO");
+    console.log("Status do Pagamento:", pagamento.status);
+
+    // Verifique se o objeto 'pagamento' existe
+    if (!pagamento) {
+      console.error(
+        "ERRO CRÍTICO: Objeto 'pagamento' retornado pela API é nulo ou indefinido."
+      );
+      return res.status(500).send("Falha ao obter dados do pagamento.");
+    }
+
+    // Verifique se a propriedade 'metadata' existe ANTES de usá-la
+    if (pagamento.metadata) {
+      console.log("-> Objeto 'metadata' ENCONTRADO:", pagamento.metadata);
+    } else {
+      console.error(
+        "-> ALERTA: Objeto 'metadata' NÃO FOI ENCONTRADO na resposta do pagamento!"
+      );
+      // Para depuração, vamos imprimir o objeto de pagamento inteiro para ver o que veio
+      console.log(
+        "Objeto 'pagamento' completo recebido:",
+        JSON.stringify(pagamento, null, 2)
+      );
+    }
+    console.log("----------------------------------------------------");
+    // ======================== FIM DO BLOCO DE DEPURAÇÃO =========================
+
     if (pagamento.status === "approved") {
+      if (!pagamento.metadata) {
+        console.error(
+          "Execução interrompida: metadata ausente em pagamento aprovado."
+        );
+        return res.status(500).send("Erro: Dados da transação incompletos.");
+      }
       const cpfLimpo = pagamento.external_reference;
       const dados = {
         cpf: pagamento.external_reference,
         nome: pagamento.metadata.nome,
         rg: pagamento.metadata.rg,
         endereco: pagamento.metadata.endereco,
-        planoEscolhido: pagamento.metadata.plano_escolhido, // Verifique os nomes exatos
-        valorPago: pagamento.metadata.valor_pago,
-        formaPagamento: pagamento.metadata.forma_pagamento,
+        planoEscolhido: pagamento.metadata.planoEscolhido, // Verifique os nomes exatos
+        valorPago: pagamento.metadata.valorPago,
+        formaPagamento: pagamento.metadata.formaPagamento,
         email: pagamento.metadata.email,
         cidade: pagamento.metadata.cidade,
       };
+      console.log("variável dados antes do if:", dados);
       if (!dados) {
         console.warn("Dados do usuário não encontrados.");
         return res.redirect("/aguardando.html");
