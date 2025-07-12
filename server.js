@@ -152,12 +152,21 @@ app.post("/webhook", express.json(), async (req, res) => {
           nome: pagamento.metadata.nome,
           rg: pagamento.metadata.rg,
           endereco: pagamento.metadata.endereco,
-          planoEscolhido: pagamento.metadata.plano_escolhido,
-          valorPago: pagamento.metadata.valor_pago,
-          formaPagamento: pagamento.metadata.forma_pagamento,
+          planoEscolhido: pagamento.metadata.plano_escolhido, // CORRIGIDO
+          valorPago: pagamento.metadata.valor_pago, // CORRIGIDO
+          formaPagamento: pagamento.metadata.forma_pagamento, // CORRIGIDO
           email: pagamento.metadata.email,
           cidade: pagamento.metadata.cidade,
         };
+
+        // VERIFICAÇÃO DEFENSIVA IMEDIATAMENTE APÓS A CRIAÇÃO DE 'dados'
+        if (typeof dados.planoEscolhido === "undefined") {
+          console.error(
+            "[WEBHOOK] ALERTA MÁXIMO: 'dados.planoEscolhido' está INDEFINIDO mesmo após a leitura do metadata."
+          );
+          // Mesmo com o erro, vamos tentar continuar com um valor padrão para não quebrar tudo
+          dados.planoEscolhido = ""; // Atribui uma string vazia para evitar o 'TypeError'
+        }
 
         // 1. Gerar PDF
         const htmlContent = gerarHtmlContrato(dados);
@@ -185,12 +194,18 @@ app.post("/webhook", express.json(), async (req, res) => {
           essencial360: "https://forms.gle/FORM_ESSENCIAL",
           prime360: "https://forms.gle/FORM_PRIME",
         };
+        const planoNormalizado = dados.planoEscolhido
+          .toLowerCase()
+          .replace(/\s/g, ""); // Remove espaços e deixa minúsculo
+        const chaveDoPlano = Object.keys(linksFormularios).find((key) =>
+          planoNormalizado.includes(key)
+        );
         const linkFormulario =
-          linksFormularios[
-            Object.keys(linksFormularios).find((key) =>
-              dados.planoEscolhido.toLowerCase().includes(key)
-            )
-          ] || "https://controlefinanceiro360.com.br";
+          linksFormularios[chaveDoPlano] ||
+          "https://controlefinanceiro360.com.br";
+        console.log(
+          `[WEBHOOK] Plano: '${dados.planoEscolhido}', Chave encontrada: '${chaveDoPlano}', Link: '${linkFormulario}'`
+        );
 
         const transporter = nodemailer.createTransport({
           service: "gmail",
@@ -207,7 +222,35 @@ app.post("/webhook", express.json(), async (req, res) => {
           html: `<h2>Olá, ${dados.nome}!</h2><p>Recebemos seu pagamento e seu contrato foi gerado com sucesso.</p><p>Faça o preenchimento do formulário final por meio do link abaixo:</p><p><a href="${linkFormulario}" target="_blank">Clique aqui para preencher o formulário</a></p><p>Em até 10 dias nossa equipe entrará em contato com seu diagnóstico.</p><hr /><p>Qualquer dúvida, envie um email para suporte@controlefinanceiro360.com.br.</p>`,
           attachments: [{ filename: "contrato.pdf", content: pdfBuffer }],
         });
-        console.log(`[WEBHOOK] E-mail para ${dados.email} enviado.`);
+        console.log(`[WEBHOOK] E-mail para o CLIENTE ${dados.email} enviado.`);
+
+        // Envio do segundo e-mail para o destino interno
+        await transporter.sendMail({
+          from: process.env.EMAIL_REMETENTE,
+          to: process.env.EMAIL_DESTINO, // Usa a variável de ambiente do seu e-mail
+          subject: `Novo Contrato Recebido - Plano ${dados.planoEscolhido} - ${dados.nome}`,
+          html: `
+                <h2>Novo contrato gerado e enviado para o cliente.</h2>
+                <p><strong>Nome:</strong> ${dados.nome}</p>
+                <p><strong>Email:</strong> ${dados.email}</p>
+                <p><strong>CPF:</strong> ${dados.cpf}</p>
+                <p><strong>Plano Contratado:</strong> ${
+                  dados.planoEscolhido
+                }</p>
+                <p><strong>Valor Pago:</strong> R$${dados.valorPago / 100}</p>
+                <p><strong>Forma de Pagamento:</strong> ${
+                  dados.formaPagamento
+                }</p>
+                <hr>
+                <p>O contrato em anexo é uma cópia do que foi enviado ao cliente.</p>
+            `,
+          attachments: [
+            { filename: `contrato-${dados.nome}.pdf`, content: pdfBuffer },
+          ],
+        });
+        console.log(
+          `[WEBHOOK] E-mail para o DESTINO INTERNO (${process.env.EMAIL_DESTINO}) enviado.`
+        );
 
         // 3. Marcar como processado
         resultadosProcessados.set(paymentId.toString(), { success: true });
