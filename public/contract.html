@@ -307,7 +307,15 @@
                     body: JSON.stringify({
                         titulo: item.titulo,
                         preco: item.valor,
-                        cpf: cpfLimpo
+                        valorPago: item.valor,
+                        planoEscolhido: item.titulo,
+                        cpf: cpf.value,
+                        nome: nome.value,
+                        rg: rg.value,
+                        endereco: end.value,
+                        formaPagamento: pagamento.value,
+                        email: email.value,
+                        cidade: cidade.value
                     })
                 });
 

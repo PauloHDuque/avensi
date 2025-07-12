@@ -140,7 +140,7 @@ app.get("/pagamento-concluido", async (req, res) => {
 
       // Gera o PDF novamente (melhor que depender do disco)
       const htmlContent = gerarHtmlContrato(dados);
-      console.log("HTML gerado para o contrato:", htmlContent);
+      console.log("deu certo finalmente");
 
       const browser = await puppeteer.launch({
         headless: "new",
