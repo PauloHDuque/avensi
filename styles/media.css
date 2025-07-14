@@ -50,6 +50,19 @@
     font-size: 30px;
   }
 
+  #section-two .content-sec-two{
+    flex-direction: column-reverse;
+  }
+
+  #section-two .left-content{
+    margin-top: 45px;
+  }
+
+  #section-two .left-content img{
+    height: 200px;
+    width: 100%;
+  }
+
   #section-two .content-card .card {
     width: 100%;
     padding: 25px;
