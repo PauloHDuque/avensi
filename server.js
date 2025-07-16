@@ -190,22 +190,34 @@ app.post("/webhook", express.json(), async (req, res) => {
 
         // 2. Enviar Email
         const linksFormularios = {
-          start360: "https://forms.gle/FORM_START",
-          essencial360: "https://forms.gle/FORM_ESSENCIAL",
-          prime360: "https://forms.gle/FORM_PRIME",
+          start360: "",
+          essencial360: "https://forms.gle/RDwdXCfwDe4L6Qnx8",
+          prime360: "https://forms.gle/RDwdXCfwDe4L6Qnx8",
         };
+
         const planoNormalizado = dados.planoEscolhido
           .toLowerCase()
           .replace(/\s/g, ""); // Remove espaços e deixa minúsculo
         const chaveDoPlano = Object.keys(linksFormularios).find((key) =>
           planoNormalizado.includes(key)
         );
-        const linkFormulario =
-          linksFormularios[chaveDoPlano] ||
-          "https://controlefinanceiro360.com.br";
+        const linkFormularioAdicional = linksFormularios[chaveDoPlano] || "";
+
         console.log(
-          `[WEBHOOK] Plano: '${dados.planoEscolhido}', Chave encontrada: '${chaveDoPlano}', Link: '${linkFormulario}'`
+          `[WEBHOOK] Plano: '${dados.planoEscolhido}', Chave encontrada: '${chaveDoPlano}', Link adicional: '${linkFormularioAdicional}'`
         );
+
+        const formularioPadraoHTML = `
+  <p><strong>1. Formulário de Dados Financeiros:</strong></p>
+  <p><a href="https://forms.gle/X62hXGXiKqJSbofi9" target="_blank">Clique aqui para preencher</a></p>
+`;
+
+        const formularioAdicionalHTML = linkFormularioAdicional
+          ? `
+  <p><strong>2. Questionário de Finanças Pessoais:</strong></p>
+  <p><a href="${linkFormularioAdicional}" target="_blank">Clique aqui para preencher</a></p>
+  `
+          : "";
 
         const transporter = nodemailer.createTransport({
           service: "gmail",
@@ -219,9 +231,18 @@ app.post("/webhook", express.json(), async (req, res) => {
           from: process.env.EMAIL_REMETENTE,
           to: dados.email,
           subject: "Seu contrato foi gerado com sucesso!",
-          html: `<h2>Olá, ${dados.nome}!</h2><p>Recebemos seu pagamento e seu contrato foi gerado com sucesso.</p><p>Faça o preenchimento do formulário final por meio do link abaixo:</p><p><a href="${linkFormulario}" target="_blank">Clique aqui para preencher o formulário</a></p><p>Em até 10 dias nossa equipe entrará em contato com seu diagnóstico.</p><hr /><p>Qualquer dúvida, envie um email para suporte@controlefinanceiro360.com.br.</p>`,
+          html: `
+    <h2>Olá, ${dados.nome}!</h2>
+    <p>Recebemos seu pagamento e seu contrato foi gerado com sucesso.</p>
+    ${formularioPadraoHTML}
+    ${formularioAdicionalHTML}
+    <p>Após preencher os formulários, em até 10 dias nossa equipe entrará em contato com seu diagnóstico.</p>
+    <hr />
+    <p>Qualquer dúvida, envie um email para <strong>suporte@controlefinanceiro360.com.br</strong>.</p>
+  `,
           attachments: [{ filename: "contrato.pdf", content: pdfBuffer }],
         });
+
         console.log(`[WEBHOOK] E-mail para o CLIENTE ${dados.email} enviado.`);
 
         // Envio do segundo e-mail para o destino interno
