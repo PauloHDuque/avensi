@@ -174,7 +174,7 @@
   justify-content: center;
   flex-wrap: wrap;
   align-items: center;
-  margin-top: 25px;
+  margin-top: 45px;
 }
 
 #section-two .left-content{
@@ -185,21 +185,26 @@
 
 #section-two .left-content img {
   border-radius: 10px;
-  object-fit: cover;
-  height: 170px;
+  height: 500px;
   width: 100%;
 }
 
+#section-two .right-content{
+  height: 1550px;
+}
+
 #section-two .content-card {
-  margin-top: 45px;
+  position: sticky;
+  top: 130px;
   display: flex;
   gap: 15px;
   flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
+  
 }
 
 #section-two .content-card .card {
-  height: 100%;
+  height: fit-content;
   width: 100%;
   border: none;
   padding: 20px;
