@@ -98,11 +98,23 @@
                             <option value="Boleto">Boleto</option>
                         </select>
 
-                        <label for="endereco">Endereço completo:</label>
-                        <input type="text" id="endereco" name="endereco" required>
+                        <label for="logradouro">Logradouro:</label>
+                        <input type="text" id="logradouro" name="logradouro" required>
+
+                        <label for="numero">Número:</label>
+                        <input type="text" id="numero" name="numero" required>
+
+                        <label for="cep">CEP:</label>
+                        <input type="text" id="cep" name="cep" required>
+
+                        <label for="bairro">Bairro:</label>
+                        <input type="text" id="bairro" name="bairro" required>
 
                         <label for="cidade">Cidade:</label>
                         <input type="text" id="cidade" name="cidade" required />
+
+                        <label for="uf">UF:</label>
+                        <input type="text" id="uf" name="uf" required />
 
                         <div class="checkbox-container">
                             <input type="checkbox" id="confirmacaoContrato" required />
@@ -165,8 +177,8 @@
                         </li>
                         <li>
                             <a title="Clique aqui para ser direcionado a página POLÍTICA DE PRIVACIDADE"
-                                href="/politica-privacidade.html"><i
-                                    class="fa-solid fa-chevron-right"></i>POLÍTICA DE PRIVACIDADE</a>
+                                href="/politica-privacidade.html"><i class="fa-solid fa-chevron-right"></i>POLÍTICA DE
+                                PRIVACIDADE</a>
                         </li>
                     </ul>
                 </div>
@@ -290,7 +302,8 @@
                         cpf: document.getElementById('cpf').value,
                         nome: document.getElementById('nome').value,
                         rg: document.getElementById('rg').value,
-                        endereco: document.getElementById('endereco').value,
+                        endereco: `${document.getElementById('logradouro').value}, ${document.getElementById('numero').value} - ${document.getElementById('bairro').value}, ${document.getElementById('cidade').value} - ${document.getElementById('uf').value}, CEP: ${document.getElementById('cep').value}`
+                        ,
                         formaPagamento: document.getElementById('formaPagamento').value,
                         email: document.getElementById('email').value,
                         cidade: document.getElementById('cidade').value,
