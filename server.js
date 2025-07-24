@@ -221,7 +221,9 @@ app.post("/webhook", express.json(), async (req, res) => {
         }
 
         const transporter = nodemailer.createTransport({
-          service: "gmail",
+          host: "smtp.hostinger.com",
+          port: 465,
+          secure: true,
           auth: {
             user: process.env.EMAIL_REMETENTE,
             pass: process.env.EMAIL_SENHA,
