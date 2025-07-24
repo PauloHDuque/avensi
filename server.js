@@ -189,35 +189,36 @@ app.post("/webhook", express.json(), async (req, res) => {
         console.log(`[WEBHOOK] PDF para ${paymentId} gerado.`);
 
         // 2. Enviar Email
-        const linksFormularios = {
-          start360: "",
-          essencial360: "https://forms.gle/RDwdXCfwDe4L6Qnx8",
-          prime360: "https://forms.gle/RDwdXCfwDe4L6Qnx8",
-        };
-
+        // Normaliza o nome do plano para localizar o arquivo correto
         const planoNormalizado = dados.planoEscolhido
           .toLowerCase()
-          .replace(/\s/g, ""); // Remove espaços e deixa minúsculo
-        const chaveDoPlano = Object.keys(linksFormularios).find((key) =>
-          planoNormalizado.includes(key)
+          .replace(/\s/g, ""); // ex: "Start 360" → "start360"
+
+        // Monta o caminho do arquivo HTML do email
+        const caminhoHtmlEmail = path.join(
+          __dirname,
+          "emails",
+          `${planoNormalizado}.html`
         );
-        const linkFormularioAdicional = linksFormularios[chaveDoPlano] || "";
 
-        console.log(
-          `[WEBHOOK] Plano: '${dados.planoEscolhido}', Chave encontrada: '${chaveDoPlano}', Link adicional: '${linkFormularioAdicional}'`
-        );
+        let htmlEmail = "";
 
-        const formularioPadraoHTML = `
-  <p><strong>1. Formulário de Dados Financeiros:</strong></p>
-  <p><a href="https://forms.gle/X62hXGXiKqJSbofi9" target="_blank">Clique aqui para preencher</a></p>
-`;
-
-        const formularioAdicionalHTML = linkFormularioAdicional
-          ? `
-  <p><strong>2. Questionário de Finanças Pessoais:</strong></p>
-  <p><a href="${linkFormularioAdicional}" target="_blank">Clique aqui para preencher</a></p>
-  `
-          : "";
+        // Lê o HTML do arquivo e substitui o nome do cliente
+        try {
+          htmlEmail = fs.readFileSync(caminhoHtmlEmail, "utf-8");
+          htmlEmail = htmlEmail.replace("[Nome do Cliente]", dados.nome);
+        } catch (erro) {
+          console.error(
+            `❌ Erro ao ler email do plano '${planoNormalizado}':`,
+            erro
+          );
+          htmlEmail = `
+    <h2>Olá, ${dados.nome}!</h2>
+    <p>Recebemos seu pagamento e seu contrato foi gerado com sucesso.</p>
+    <p>Em breve, nossa equipe entrará em contato com mais orientações.</p>
+    <p>Qualquer dúvida, fale com: suporte@controlefinanceiro360.com.br</p>
+  `;
+        }
 
         const transporter = nodemailer.createTransport({
           service: "gmail",
@@ -230,17 +231,16 @@ app.post("/webhook", express.json(), async (req, res) => {
         await transporter.sendMail({
           from: process.env.EMAIL_REMETENTE,
           to: dados.email,
-          subject: "Seu contrato foi gerado com sucesso!",
-          html: `
-    <h2>Olá, ${dados.nome}!</h2>
-    <p>Recebemos seu pagamento e seu contrato foi gerado com sucesso.</p>
-    ${formularioPadraoHTML}
-    ${formularioAdicionalHTML}
-    <p>Após preencher os formulários, em até 10 dias nossa equipe entrará em contato com seu diagnóstico.</p>
-    <hr />
-    <p>Qualquer dúvida, envie um email para <strong>suporte@controlefinanceiro360.com.br</strong>.</p>
-  `,
-          attachments: [{ filename: "contrato.pdf", content: pdfBuffer }],
+          subject: `Seja bem-vindo ao ${dados.planoEscolhido} – Suas metas financeiras começam a se tornar realidade!`,
+          html: htmlEmail,
+          attachments: [
+            {
+              filename: "logo-email.png",
+              path: path.join(__dirname, "images", "logo-email.png"),
+              cid: "controlefinanceiro360-logo",
+            },
+            { filename: "contrato.pdf", content: pdfBuffer },
+          ],
         });
 
         console.log(`[WEBHOOK] E-mail para o CLIENTE ${dados.email} enviado.`);
