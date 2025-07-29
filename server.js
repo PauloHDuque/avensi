@@ -217,7 +217,7 @@ app.post("/webhook", express.json(), async (req, res) => {
     <h2>Olá, ${dados.nome}!</h2>
     <p>Recebemos seu pagamento e seu contrato foi gerado com sucesso.</p>
     <p>Em breve, nossa equipe entrará em contato com mais orientações.</p>
-    <p>Qualquer dúvida, fale com: suporte@controlefinanceiro360.com.br</p>
+    <p>Qualquer dúvida, fale com: atendimento@controlefinanceiro360.com.br</p>
   `;
         }
 

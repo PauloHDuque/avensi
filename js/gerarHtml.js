@@ -79,7 +79,7 @@ function gerarHtmlContrato(dados) {
       <p>6.1 O CONTRATADO não se responsabiliza por decisões financeiras tomadas pelo CONTRATANTE com base no relatório entregue.</p>
       <p>6.2 O serviço prestado tem caráter consultivo e informativo, não se caracterizando como garantia de resultados futuros.</p>
       <h3>CLÁUSULA 7 – DA RESCISÃO E VIGÊNCIA</h3>
-      <p>7.1 Este contrato poderá ser rescindido dentro prazo de 7 dias corridos após a confirmação de pagamento, mediante notificação por escrito no e-mail suporte@controlefinanceiro360.com.br </p>
+      <p>7.1 Este contrato poderá ser rescindido dentro prazo de 7 dias corridos após a confirmação de pagamento, mediante notificação por escrito no e-mail atendimento@controlefinanceiro360.com.br </p>
       <p>7.2 O presente contrato terá vigência de ${vigencia} após a confirmação de pagamento.</p>
       <h3>CLÁUSULA 8 – DO FORO</h3>
       <p>8.1 Para dirimir quaisquer controvérsias oriundas deste contrato, as partes elegem o foro da Comarca de São Paulo - SP com renúncia a qualquer outro, por mais privilegiado que seja.</p>
