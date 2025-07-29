@@ -5,7 +5,7 @@ function gerarHtmlContrato(dados) {
       nome,
       cpf,
       rg,
-      endereco,
+      logradouro,
       planoEscolhido,
       valorPago,
       formaPagamento,
@@ -58,7 +58,7 @@ function gerarHtmlContrato(dados) {
     <body>
       <h2>CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE PLANEJAMENTO FINANCEIRO</h2>
       <p>Pelo presente instrumento particular, as partes:</p>
-      <p><strong>CONTRATANTE:</strong> ${nome}, portador do CPF nº ${cpf} e RG nº ${rg}, residente e domiciliado à ${endereco};</p>
+      <p><strong>CONTRATANTE:</strong> ${nome}, portador do CPF nº ${cpf} e RG nº ${rg}, residente e domiciliado à ${logradouro};</p>
       <p><strong>CONTRATADO</strong> AVENSI, CNPJ 60.849.761/0001-44, com sede à Rua Sergio Antunes de Andrade, 363 – Sala 2 – Jardim das Oliveiras – CEP 08122-110, São Paulo - SP;</p>
       <p>Têm entre si, justo e contratado, o seguinte:</p>
       <h3>CLÁUSULA 1 – OBJETO</h3>
@@ -88,7 +88,6 @@ function gerarHtmlContrato(dados) {
       <p>Data: ${dataHoje}</p>
       <h3>CONTRATANTE:</h3>
       <p>Eu ${nome}, confirmo que li, compreendi e aceito os termos estabelecidos neste contrato. </p>
-      <p>Nome completo:</p>
       <h3>CONTRATADO:</h3>
       <p>Assinatura: AVENSI</p>
       <p>CNPJ/CPF: 60.849.761/0001-44</p>
