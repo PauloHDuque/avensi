@@ -41,10 +41,14 @@ app.post("/criar-preferencia", async (req, res) => {
     nome,
     rg,
     logradouro,
+    numero,
+    cep,
+    bairro,
+    cidade,
+    uf,
     planoEscolhido,
     formaPagamento,
     email,
-    cidade,
   } = req.body;
 
   console.log("Dados recebidos para criar preferência:", {
@@ -54,10 +58,14 @@ app.post("/criar-preferencia", async (req, res) => {
     nome,
     rg,
     logradouro,
+    numero,
+    cep,
+    bairro,
+    cidade,
+    uf,
     planoEscolhido,
     formaPagamento,
     email,
-    cidade,
   });
 
   const preferenceData = {
@@ -83,11 +91,15 @@ app.post("/criar-preferencia", async (req, res) => {
       nome,
       rg,
       logradouro,
+      numero,
+      cep,
+      bairro,
+      cidade,
+      uf,
       planoEscolhido,
       valorPago: preco,
       formaPagamento,
       email,
-      cidade,
     },
   };
 
@@ -153,11 +165,15 @@ app.post("/webhook", express.json(), async (req, res) => {
           nome: pagamento.metadata.nome,
           rg: pagamento.metadata.rg,
           endereco: pagamento.metadata.logradouro,
+          numero: pagamento.metadata.numero,
+          cep: pagamento.metadata.cep,
+          bairro: pagamento.metadata.bairro,
+          cidade: pagamento.metadata.cidade,
+          uf: pagamento.metadata.uf,
           planoEscolhido: pagamento.metadata.plano_escolhido, // CORRIGIDO
           valorPago: pagamento.metadata.valor_pago, // CORRIGIDO
           formaPagamento: pagamento.metadata.forma_pagamento, // CORRIGIDO
           email: pagamento.metadata.email,
-          cidade: pagamento.metadata.cidade,
         };
 
         // VERIFICAÇÃO DEFENSIVA IMEDIATAMENTE APÓS A CRIAÇÃO DE 'dados'
@@ -258,6 +274,13 @@ app.post("/webhook", express.json(), async (req, res) => {
                 <p><strong>Nome:</strong> ${dados.nome}</p>
                 <p><strong>Email:</strong> ${dados.email}</p>
                 <p><strong>CPF:</strong> ${dados.cpf}</p>
+                <p><strong>RG:</strong> ${dados.rg}</p>
+                <p><strong>Logradouro:</strong> ${dados.logradouro}</p>
+                <p><strong>Número:</strong> ${dados.numero}</p>
+                <p><strong>CEP:</strong> ${dados.cep}</p>
+                <p><strong>Bairro:</strong> ${dados.bairro}</p>
+                <p><strong>Cidade:</strong> ${dados.cidade}</p>
+                <p><strong>UF:</strong> ${dados.uf}</p>
                 <p><strong>Plano Contratado:</strong> ${
                   dados.planoEscolhido
                 }</p>
