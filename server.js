@@ -72,8 +72,7 @@ app.post("/criar-preferencia", async (req, res) => {
     items: [
       {
         title: titulo,
-        // unit_price: preco / 100, // Preço em reais
-        unit_price: 1, // após teste remover essa linha
+        unit_price: preco / 100, // Preço em reais
         description: "Relatório de Planejamento Financeiro",
         currency_id: "BRL",
         quantity: 1,
