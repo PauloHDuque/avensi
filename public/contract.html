@@ -260,6 +260,10 @@
         const cpf = document.getElementById('cpf');
         const rg = document.getElementById('rg');
         const end = document.getElementById('logradouro');
+        const bairro = document.getElementById('bairro')
+        const numero = document.getElementById('numero')
+        const cep = document.getElementById('cep')
+        const uf = document.getElementById('uf')
         const pagamento = document.getElementById('formaPagamento');
         const checkbox = document.getElementById("confirmacaoContrato");
         const botao = document.getElementById("btnPagamento");
@@ -302,11 +306,14 @@
                         cpf: document.getElementById('cpf').value,
                         nome: document.getElementById('nome').value,
                         rg: document.getElementById('rg').value,
-                        logradouro: `${document.getElementById('logradouro').value}, ${document.getElementById('numero').value} - ${document.getElementById('bairro').value}, ${document.getElementById('cidade').value} - ${document.getElementById('uf').value}, CEP: ${document.getElementById('cep').value}`
-                        ,
+                        logradouro: document.getElementById('logradouro').value,
+                        numero: document.getElementById('numero').value,
+                        cep: document.getElementById('cep').value,
+                        bairro: document.getElementById('bairro').value,
+                        uf: document.getElementById('uf').value,
+                        cidade: pagamento.metadata.cidade,
                         formaPagamento: document.getElementById('formaPagamento').value,
                         email: document.getElementById('email').value,
-                        cidade: document.getElementById('cidade').value,
                         planoEscolhido: item.titulo
                     })
                 });
