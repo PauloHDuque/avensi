@@ -40,7 +40,7 @@ app.post("/criar-preferencia", async (req, res) => {
     cpf,
     nome,
     rg,
-    endereco,
+    logradouro,
     planoEscolhido,
     formaPagamento,
     email,
@@ -53,7 +53,7 @@ app.post("/criar-preferencia", async (req, res) => {
     cpf,
     nome,
     rg,
-    endereco,
+    logradouro,
     planoEscolhido,
     formaPagamento,
     email,
@@ -152,7 +152,7 @@ app.post("/webhook", express.json(), async (req, res) => {
           cpf: pagamento.external_reference,
           nome: pagamento.metadata.nome,
           rg: pagamento.metadata.rg,
-          endereco: pagamento.metadata.endereco,
+          endereco: pagamento.metadata.logradouro,
           planoEscolhido: pagamento.metadata.plano_escolhido, // CORRIGIDO
           valorPago: pagamento.metadata.valor_pago, // CORRIGIDO
           formaPagamento: pagamento.metadata.forma_pagamento, // CORRIGIDO
