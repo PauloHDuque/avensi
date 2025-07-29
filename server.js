@@ -164,7 +164,7 @@ app.post("/webhook", express.json(), async (req, res) => {
           cpf: pagamento.external_reference,
           nome: pagamento.metadata.nome,
           rg: pagamento.metadata.rg,
-          endereco: pagamento.metadata.logradouro,
+          logradouro: pagamento.metadata.logradouro,
           numero: pagamento.metadata.numero,
           cep: pagamento.metadata.cep,
           bairro: pagamento.metadata.bairro,
