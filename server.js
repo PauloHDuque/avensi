@@ -82,7 +82,7 @@ app.post("/criar-preferencia", async (req, res) => {
     metadata: {
       nome,
       rg,
-      endereco,
+      logradouro,
       planoEscolhido,
       valorPago: preco,
       formaPagamento,
