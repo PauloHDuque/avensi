@@ -328,106 +328,106 @@
     </script>
     <script>
 
-        const aplicarMascaraCPF = v =>
-            v.replace(/\D/g, '')
-                .replace(/(\d{3})(\d)/, '$1.$2')
-                .replace(/(\d{3})(\d)/, '$1.$2')
-                .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        // const aplicarMascaraCPF = v =>
+        //     v.replace(/\D/g, '')
+        //         .replace(/(\d{3})(\d)/, '$1.$2')
+        //         .replace(/(\d{3})(\d)/, '$1.$2')
+        //         .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
 
-        const aplicarMascaraRG = v =>
-            v.replace(/\D/g, '')
-                .replace(/(\d{2})(\d)/, '$1.$2')
-                .replace(/(\d{3})(\d)/, '$1.$2')
-                .replace(/(\d{3})(\d)$/, '$1-$2');
-
-
-        const validarCPF = v => v.replace(/\D/g, '').length === 11;
-        const validarRG = v => v.replace(/\D/g, '').length === 9;
-
-        function exibirErro(input, msg) {
-            input.dataset.erro = '1';
-            input.style.border = '2px solid red';
-            let box = input.nextElementSibling;
-            if (!box || !box.classList.contains('erro-msg')) {
-                box = document.createElement('div');
-                box.className = 'erro-msg';
-                box.style.color = 'red';
-                box.style.marginTop = '4px';
-                input.parentNode.insertBefore(box, input.nextSibling);
-            }
-            box.textContent = msg;
-        }
-        function limparErro(input) {
-            delete input.dataset.erro;
-            input.style.border = '';
-            if (input.nextElementSibling && input.nextElementSibling.classList.contains('erro-msg')) {
-                input.nextElementSibling.remove();
-            }
-        }
+        // const aplicarMascaraRG = v =>
+        //     v.replace(/\D/g, '')
+        //         .replace(/(\d{2})(\d)/, '$1.$2')
+        //         .replace(/(\d{3})(\d)/, '$1.$2')
+        //         .replace(/(\d{3})(\d)$/, '$1-$2');
 
 
+        // const validarCPF = v => v.replace(/\D/g, '').length === 11;
+        // const validarRG = v => v.replace(/\D/g, '').length === 9;
 
-        function checarFormulario() {
-            const tudoValido =
-                nome.value.trim() !== '' &&
-                end.value.trim() !== '' &&
-                pagamento.value !== '' &&
-                validarCPF(cpf.value) &&
-                validarRG(rg.value) &&
-                !form.querySelector('[data-erro]');
+        // function exibirErro(input, msg) {
+        //     input.dataset.erro = '1';
+        //     input.style.border = '2px solid red';
+        //     let box = input.nextElementSibling;
+        //     if (!box || !box.classList.contains('erro-msg')) {
+        //         box = document.createElement('div');
+        //         box.className = 'erro-msg';
+        //         box.style.color = 'red';
+        //         box.style.marginTop = '4px';
+        //         input.parentNode.insertBefore(box, input.nextSibling);
+        //     }
+        //     box.textContent = msg;
+        // }
+        // function limparErro(input) {
+        //     delete input.dataset.erro;
+        //     input.style.border = '';
+        //     if (input.nextElementSibling && input.nextElementSibling.classList.contains('erro-msg')) {
+        //         input.nextElementSibling.remove();
+        //     }
+        // }
 
-            botao.disabled = !tudoValido;
-            console.log('Formulário válido:', tudoValido);
-        }
 
-        cpf.addEventListener('input', () => {
-            cpf.value = aplicarMascaraCPF(cpf.value);
-            validarCPF(cpf.value) ? limparErro(cpf) : exibirErro(cpf, 'CPF inválido');
-            checarFormulario();
-        });
 
-        rg.addEventListener('input', () => {
-            rg.value = aplicarMascaraRG(rg.value);
-            validarRG(rg.value) ? limparErro(rg) : exibirErro(rg, 'RG inválido');
-            checarFormulario();
-        });
+        // function checarFormulario() {
+        //     const tudoValido =
+        //         nome.value.trim() !== '' &&
+        //         end.value.trim() !== '' &&
+        //         pagamento.value !== '' &&
+        //         validarCPF(cpf.value) &&
+        //         validarRG(rg.value) &&
+        //         !form.querySelector('[data-erro]');
 
-        email.addEventListener('input', validarFormContrato);
+        //     botao.disabled = !tudoValido;
+        //     console.log('Formulário válido:', tudoValido);
+        // }
 
-        [nome, end].forEach(el =>
-            el.addEventListener('input', checarFormulario)
-        );
+        // cpf.addEventListener('input', () => {
+        //     cpf.value = aplicarMascaraCPF(cpf.value);
+        //     validarCPF(cpf.value) ? limparErro(cpf) : exibirErro(cpf, 'CPF inválido');
+        //     checarFormulario();
+        // });
 
-        pagamento.addEventListener('change', checarFormulario);
+        // rg.addEventListener('input', () => {
+        //     rg.value = aplicarMascaraRG(rg.value);
+        //     validarRG(rg.value) ? limparErro(rg) : exibirErro(rg, 'RG inválido');
+        //     checarFormulario();
+        // });
 
-        botao.addEventListener('click', () => {
-            if (!botao.disabled) {
-                console.log('Gerando PDF com dados válidos…');
-            }
-        });
+        // email.addEventListener('input', validarFormContrato);
 
-        checarFormulario();
-        // Validação do formulário de contrato
+        // [nome, end].forEach(el =>
+        //     el.addEventListener('input', checarFormulario)
+        // );
 
-        function validarEmail(valor) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
-        }
+        // pagamento.addEventListener('change', checarFormulario);
 
-        function validarFormContrato() {
-            const nomeOk = nome.value.trim() !== '';
-            const cpfOk = validarCPF(cpf.value);
-            const rgOk = validarRG(rg.value);
-            const enderecoOk = end.value.trim() !== '';
-            const pagamentoOk = pagamento.value !== '';
-            const checkboxOk = checkbox.checked;
-            const emailOk = validarEmail(email.value);
+        // botao.addEventListener('click', () => {
+        //     if (!botao.disabled) {
+        //         console.log('Gerando PDF com dados válidos…');
+        //     }
+        // });
 
-            botao.disabled = !(nomeOk && cpfOk && rgOk && enderecoOk && pagamentoOk && checkboxOk && emailOk);
-        }
+        // checarFormulario();
+        // // Validação do formulário de contrato
 
-        checkbox.addEventListener('change', validarFormContrato);
-        [nome, cpf, rg, end, pagamento].forEach(el => el.addEventListener('input', validarFormContrato));
-        pagamento.addEventListener('change', validarFormContrato);
+        // function validarEmail(valor) {
+        //     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
+        // }
+
+        // function validarFormContrato() {
+        //     const nomeOk = nome.value.trim() !== '';
+        //     const cpfOk = validarCPF(cpf.value);
+        //     const rgOk = validarRG(rg.value);
+        //     const enderecoOk = end.value.trim() !== '';
+        //     const pagamentoOk = pagamento.value !== '';
+        //     const checkboxOk = checkbox.checked;
+        //     const emailOk = validarEmail(email.value);
+
+        //     botao.disabled = !(nomeOk && cpfOk && rgOk && enderecoOk && pagamentoOk && checkboxOk && emailOk);
+        // }
+
+        // checkbox.addEventListener('change', validarFormContrato);
+        // [nome, cpf, rg, end, pagamento].forEach(el => el.addEventListener('input', validarFormContrato));
+        // pagamento.addEventListener('change', validarFormContrato);
     </script>
 
 
