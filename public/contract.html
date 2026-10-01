@@ -77,52 +77,89 @@
 
                     <hr />
 
-                    <form id="form-contrato">
-                        <label for="nome">Nome completo:</label>
-                        <input type="text" id="nome" name="nome" required />
+                    <form id="form-contrato" class="form-grid">
+                    
+                        <div class="section-divider">
+                            Dados pessoais
+                        </div>
 
-                        <label for="email">E-mail:</label>
-                        <input type="email" id="email" name="email" required>
-
-                        <label for="cpf">CPF:</label>
-                        <input type="text" id="cpf" name="cpf" required />
-
-                        <label for="rg">RG:</label>
-                        <input type="text" id="rg" name="rg" required />
-
-                        <label for="formaPagamento">Informe a forma de pagamento:</label>
-                        <select name="formaPagamento" id="formaPagamento" required>
-                            <option disabled selected>Selecione a forma de pagamento:</option>
-                            <option value="Pix">Pix</option>
-                            <option value="Cartão de Crédito">Cartão de Crédito</option>
-                            <option value="Boleto">Boleto</option>
-                        </select>
-
-                        <label for="logradouro">Logradouro:</label>
-                        <input type="text" id="logradouro" name="logradouro" required>
-
-                        <label for="numero">Número:</label>
-                        <input type="text" id="numero" name="numero" required>
-
-                        <label for="cep">CEP:</label>
-                        <input type="text" id="cep" name="cep" required>
-
-                        <label for="bairro">Bairro:</label>
-                        <input type="text" id="bairro" name="bairro" required>
-
-                        <label for="cidade">Cidade:</label>
-                        <input type="text" id="cidade" name="cidade" required />
-
-                        <label for="uf">UF:</label>
-                        <input type="text" id="uf" name="uf" required />
-
+                        <!-- Dados pessoais -->
+                        <div class="form-field">
+                            <label for="nome">Nome completo</label>
+                            <input type="text" id="nome" name="nome" required />
+                        </div>
+                    
+                        <div class="form-field">
+                            <label for="email">E-mail</label>
+                            <input type="email" id="email" name="email" required />
+                        </div>
+                    
+                        <div class="form-field">
+                            <label for="cpf">CPF</label>
+                            <input type="text" id="cpf" name="cpf" required />
+                        </div>
+                    
+                        <div class="form-field">
+                            <label for="rg">RG</label>
+                            <input type="text" id="rg" name="rg" required />
+                        </div>
+                    
+                        <div class="form-field">
+                            <label for="formaPagamento">Forma de pagamento</label>
+                            <select name="formaPagamento" id="formaPagamento" required>
+                                <option disabled selected>Selecione</option>
+                                <option value="Pix">Pix</option>
+                                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                <option value="Boleto">Boleto</option>
+                            </select>
+                        </div>
+                    
+                        <!-- quebra visual antes do endereço -->
+                        <div class="section-divider">
+                            Endereço
+                        </div>
+                    
+                        <!-- Endereço -->
+                        <div class="form-field">
+                            <label for="cep">CEP</label>
+                            <input type="text" id="cep" name="cep" required maxlength="9" />
+                        </div>
+                    
+                        <div class="form-field">
+                            <label for="logradouro">Logradouro</label>
+                            <input type="text" id="logradouro" name="logradouro" required />
+                        </div>
+                    
+                        <div class="form-field">
+                            <label for="numero">Número</label>
+                            <input type="text" id="numero" name="numero" required />
+                        </div>
+                    
+                        <div class="form-field">
+                            <label for="bairro">Bairro</label>
+                            <input type="text" id="bairro" name="bairro" required />
+                        </div>
+                    
+                        <div class="form-field">
+                            <label for="cidade">Cidade</label>
+                            <input type="text" id="cidade" name="cidade" required />
+                        </div>
+                    
+                        <div class="form-field">
+                            <label for="uf">UF</label>
+                            <input type="text" id="uf" name="uf" required maxlength="2" />
+                        </div>
+                    
+                        <!-- Checkbox em linha inteira -->
                         <div class="checkbox-container">
-                            <input type="checkbox" id="confirmacaoContrato" required />
+                            <input type="checkbox" id="confirmacaoContrato" required>
                             <label for="confirmacaoContrato">
-                                Declaro que li, estou ciente e concordo com os termos estabelecidos neste contrato.
+                              Declaro que li, estou ciente e concordo com os termos estabelecidos neste contrato.
                             </label>
                         </div>
+                    
                     </form>
+                    
 
                     <button id="btnPagamento" disabled style="margin-top: 20px;">PAGAR COM MERCADO PAGO <i
                             class="fa-solid fa-lock"></i></button>
@@ -271,9 +308,9 @@
         const cidade = document.getElementById("cidade");
 
         const planos = {
-            start360: { titulo: "Start 360", valor: 999 }, // 999 //aqui é valor em real com centavos ex: 100 = 1,00
-            essencial360: { titulo: "Essencial 360", valor: 14997 }, // 14997
-            prime360: { titulo: "Prime 360", valor: 239988 } // 239988
+            start360: { titulo: "Start 360", valor: 9700 }, // 999 //aqui é valor em real com centavos ex: 100 = 1,00
+            essencial360: { titulo: "Essencial 360", valor: 59100 }, // 14997
+            prime360: { titulo: "Prime 360", valor: 356400 } // 239988
         };
 
         document.getElementById('btnPagamento').addEventListener('click', async () => {
@@ -436,9 +473,90 @@
         [nome, cpf, rg, end, pagamento].forEach(el => el.addEventListener('input', validarFormContrato));
         pagamento.addEventListener('change', validarFormContrato);
     </script>
-
-
-
+    <script>
+        const logradouro = document.getElementById('logradouro');
+        const bairroInput = document.getElementById('bairro');
+        const cidadeInput = document.getElementById('cidade');
+        const ufInput = document.getElementById('uf');
+        const cepInput = document.getElementById('cep');
+      
+        function onlyDigits(v) {
+          return (v || '').replace(/\D/g, '');
+        }
+      
+        function setReadOnlyAddress(isReadOnly) {
+          [logradouro, bairroInput, cidadeInput, ufInput].forEach(el => {
+            el.readOnly = isReadOnly;
+          });
+        }
+      
+        function clearAddressFields() {
+          logradouro.value = '';
+          bairroInput.value = '';
+          cidadeInput.value = '';
+          ufInput.value = '';
+        }
+      
+        async function buscarCepEPreencher() {
+          const cep = onlyDigits(cepInput.value);
+      
+          if (cep.length !== 8) return;
+      
+          setReadOnlyAddress(true);
+      
+          try {
+            const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            if (!resp.ok) throw new Error();
+      
+            const data = await resp.json();
+      
+            if (data.erro) {
+              setReadOnlyAddress(false);
+              return;
+            }
+      
+            logradouro.value = data.logradouro ?? '';
+            bairroInput.value = data.bairro ?? '';
+            cidadeInput.value = data.localidade ?? '';
+            ufInput.value = data.uf ?? '';
+      
+            // só trava o que veio preenchido
+            logradouro.readOnly = !!data.logradouro;
+            bairroInput.readOnly = !!data.bairro;
+            cidadeInput.readOnly = !!data.localidade;
+            ufInput.readOnly = !!data.uf;
+      
+            if (typeof checarFormulario === 'function') checarFormulario();
+            if (typeof validarFormContrato === 'function') validarFormContrato();
+      
+          } catch (e) {
+            setReadOnlyAddress(false);
+            console.error('Erro ao buscar CEP', e);
+          }
+        }
+      
+        // 🔹 MÁSCARA + LIMPEZA AO DIGITAR
+        cepInput.addEventListener('input', () => {
+          let v = onlyDigits(cepInput.value);
+          if (v.length > 8) v = v.slice(0, 8);
+      
+          cepInput.value = v.length > 5 ? `${v.slice(0,5)}-${v.slice(5)}` : v;
+      
+          // 👇 sempre que começar a digitar, limpa endereço
+          clearAddressFields();
+          setReadOnlyAddress(false);
+      
+          // busca automática quando completar 8 dígitos
+          if (v.length === 8) {
+            buscarCepEPreencher();
+          }
+        });
+      
+        // também busca se sair do campo
+        cepInput.addEventListener('blur', buscarCepEPreencher);
+      
+        setReadOnlyAddress(false);
+    </script>
 
 </body>
 
